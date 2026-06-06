@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Elite Beauty Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:opsz,wght@9..40,300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-wrap">
+    <div class="logo" onclick="go('shop')">
+  <div class="logo-circle">
+    <img src="\images\logo.png" alt="Elite Beauty Hub Logo" class="logo-img">
+  </div>
+
+  <div class="logo-text">
+    <div class="logo-name">Elite Beauty Hub</div>
+    <div class="logo-tag">Premium Cosmetics</div>
+  </div>
+</div>
+
+    <div class="search-wrap">
+      <div class="search-bar">
+        <input type="text" id="search-inp" placeholder="Search products, brands..."
+          oninput="onSearch()" onfocus="showSuggestions()" onblur="hideSuggestions()">
+        <button onclick="applyAllFilters()">🔍</button>
+      </div>
+      <div class="search-suggestions" id="search-suggestions"></div>
+    </div>
+
+    <div class="nav-right">
+      <button class="nav-btn-add" onclick="requireAuth(openAddProduct)">+ Add Product</button>
+      <button class="nav-btn" onclick="go('contact')">Contact</button>
+      <span id="user-nav-area"></span>
+      <button class="cart-pill" onclick="go('cart')">
+        🛒 Cart <span class="cart-num" id="cart-count">0</span>
+      </button>
+      <button class="ham" onclick="toggleMob()" id="ham">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- MOBILE NAV -->
+<div class="mob-nav" id="mobNav">
+  <div class="mob-search">
+    <input type="text" id="mob-search-inp" placeholder="Search products..."
+      oninput="onMobSearch()"
+      onkeydown="if(event.key==='Enter'){applyAllFilters();go('shop');closeMob()}">
+  </div>
+  <a onclick="go('shop');closeMob()">🛍️ Shop</a>
+  <a onclick="requireAuth(openAddProduct);closeMob()">➕ Add Product</a>
+  <a onclick="openFilterDrawer();closeMob()">🔧 Filters</a>
+  <a onclick="go('cart');closeMob()">🛒 Cart</a>
+  <a onclick="go('contact');closeMob()">📞 Contact</a>
+  <a id="mob-auth-link" onclick="go('auth');closeMob()">🔐 Login / Register</a>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- MOBILE FILTER DRAWER -->
+<div class="filter-drawer-overlay" id="filter-drawer-overlay" onclick="closeFilterDrawer()"></div>
+<div class="filter-drawer" id="filter-drawer">
+  <div class="filter-drawer-head">
+    <h3>🔧 Filters</h3>
+    <button class="filter-drawer-close" onclick="closeFilterDrawer()">✕</button>
+  </div>
+  <div class="filter-drawer-body">
+    <div class="sb-section"><h4>Category</h4><div id="mob-cat-filters"></div></div>
+    <div class="sb-section"><h4>Brand</h4><div id="mob-brand-filters"></div></div>
+    <div class="sb-section">
+      <h4>Price Range</h4>
+      <input type="range" class="price-range" id="mob-price-range" min="0" max="5000" value="5000" step="50" oninput="onMobPriceRange(this.value)">
+      <div class="price-labels"><span>₹0</span><span>₹5000</span></div>
+      <div class="price-val" id="mob-price-val">Up to ₹5000</div>
+    </div>
+    <div class="sb-section">
+      <h4>Min. Rating</h4>
+      <div class="star-filter">
+        <label class="star-opt on" onclick="setRating(0,this)"><input type="radio" name="mob-rating" checked> <span>★★★★★</span><em>All</em></label>
+        <label class="star-opt" onclick="setRating(4,this)"><input type="radio" name="mob-rating"> <span>★★★★☆</span><em>4+ stars</em></label>
+        <label class="star-opt" onclick="setRating(4.5,this)"><input type="radio" name="mob-rating"> <span>★★★★★</span><em>4.5+ stars</em></label>
+      </div>
+    </div>
+    <div class="sb-section">
+      <h4>Discount</h4>
+      <div id="mob-disc-filters">
+        <label class="chk-item"><input type="checkbox" value="10" onchange="applyAllFilters()"> <label>10% or more</label></label>
+        <label class="chk-item"><input type="checkbox" value="20" onchange="applyAllFilters()"> <label>20% or more</label></label>
+        <label class="chk-item"><input type="checkbox" value="30" onchange="applyAllFilters()"> <label>30% or more</label></label>
+        <label class="chk-item"><input type="checkbox" value="40" onchange="applyAllFilters()"> <label>40% or more</label></label>
+      </div>
+    </div>
+  </div>
+  <div class="filter-drawer-foot">
+    <button class="btn-clear-mob" onclick="clearAllFilters()">Clear All</button>
+    <button class="btn-apply-mob" onclick="closeFilterDrawer();showToast('✅ Filters applied!')">Apply Filters</button>
+  </div>
+</div>
+
+<!-- ========== AUTH PAGE ========== -->
+<div id="page-auth" class="page active">
+  <div class="auth-page">
+    <div class="auth-box">
+      <div class="auth-logo">
+        <div class="auth-logo-circle">
+          <img src="\images\logo.png" alt="Elite Beauty Hub Logo" class="logo-img">
+        </div>
+        <div class="auth-logo-text">
+          <div class="auth-logo-name">Elite Beauty Hub</div>
+          <div class="auth-logo-tag">Premium Cosmetics</div>
+        </div>
+      </div>
+      <p class="auth-subtitle">Login or create your beauty account</p>
+
+      <div style="margin-top:18px">
+        <div class="auth-tabs">
+          <button class="auth-tab on" onclick="switchAuthTab('login',this)">Login</button>
+          <button class="auth-tab" onclick="switchAuthTab('register',this)">Register</button>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <div class="auth-form active" id="login-form">
+          <div class="auth-fg">
+            <label>Email</label>
+            <input type="email" id="login-email" placeholder="your@email.com">
+          </div>
+          <div class="auth-fg">
+            <label>Password</label>
+            <input type="password" id="login-password" placeholder="Enter your password"
+              onkeydown="if(event.key==='Enter')doLogin()">
+          </div>
+          <button class="btn-auth" onclick="doLogin()">Login 🔐</button>
+          <div class="auth-divider">or continue as</div>
+          <button class="guest-btn" onclick="loginGuest()">👤 Guest User</button>
+        </div>
+
+        <!-- REGISTER FORM -->
+        <div class="auth-form" id="register-form">
+          <div class="auth-fg">
+            <label>Full Name</label>
+            <input type="text" id="reg-name" placeholder="Your full name">
+          </div>
+          <div class="auth-fg">
+            <label>Email</label>
+            <input type="email" id="reg-email" placeholder="your@email.com">
+          </div>
+          <div class="auth-fg">
+            <label>Password</label>
+            <input type="password" id="reg-password" placeholder="Create a password"
+              onkeydown="if(event.key==='Enter')doRegister()">
+          </div>
+          <button class="btn-auth" onclick="doRegister()">Create Account ✅</button>
+          <div class="auth-divider">or continue as</div>
+          <button class="guest-btn" onclick="loginGuest()">👤 Guest User</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SHOP PAGE -->
+<div id="page-shop" class="page">
+
+  <!-- ====== HORIZONTAL SCROLL SECTIONS (shown above main shop) ====== -->
+  <div class="hscroll-sections">
+
+    <!-- TRENDING NOW -->
+    <div class="hscroll-block">
+      <div class="hscroll-header">
+        <div>
+          <div class="hscroll-title">🔥 Trending Now</div>
+          <div class="hscroll-sub">Most loved products this week</div>
+        </div>
+        <button class="hscroll-see-all" onclick="setChip('All',null);applyAllFilters()">See All →</button>
+      </div>
+      <div class="hscroll-track-wrap">
+        <button class="hscroll-arrow hscroll-arrow-left" onclick="scrollHTrack('trending',-1)">‹</button>
+        <div class="hscroll-track" id="htrack-trending"></div>
+        <button class="hscroll-arrow hscroll-arrow-right" onclick="scrollHTrack('trending',1)">›</button>
+      </div>
+    </div>
+
+    <!-- SKINCARE PICKS -->
+    <div class="hscroll-block">
+      <div class="hscroll-header">
+        <div>
+          <div class="hscroll-title">🧴 Skincare Picks</div>
+          <div class="hscroll-sub">Glow up your routine</div>
+        </div>
+        <button class="hscroll-see-all" onclick="setChip('Skincare',document.querySelector('.chip:nth-child(3)'));go('shop')">See All →</button>
+      </div>
+      <div class="hscroll-track-wrap">
+        <button class="hscroll-arrow hscroll-arrow-left" onclick="scrollHTrack('skincare',-1)">‹</button>
+        <div class="hscroll-track" id="htrack-skincare"></div>
+        <button class="hscroll-arrow hscroll-arrow-right" onclick="scrollHTrack('skincare',1)">›</button>
+      </div>
+    </div>
+
+    <!-- BESTSELLERS -->
+    <div class="hscroll-block">
+      <div class="hscroll-header">
+        <div>
+          <div class="hscroll-title">⭐ Bestsellers</div>
+          <div class="hscroll-sub">Customer favourites, always in stock</div>
+        </div>
+        <button class="hscroll-see-all" onclick="document.getElementById('sort-sel').value='rating';applyAllFilters()">See All →</button>
+      </div>
+      <div class="hscroll-track-wrap">
+        <button class="hscroll-arrow hscroll-arrow-left" onclick="scrollHTrack('bestseller',-1)">‹</button>
+        <div class="hscroll-track" id="htrack-bestseller"></div>
+        <button class="hscroll-arrow hscroll-arrow-right" onclick="scrollHTrack('bestseller',1)">›</button>
+      </div>
+    </div>
+
+  </div>
+  <!-- ====== END HORIZONTAL SCROLL ====== -->
+
+  <div class="shop-page">
+    <div class="shop-layout">
+      <aside class="sidebar">
+        <div class="sb-title">Filters <span class="sb-clear" onclick="clearAllFilters()">Clear All</span></div>
+        <div class="sb-section"><h4>Category</h4><div id="cat-filters"></div></div>
+        <div class="sb-section"><h4>Brand</h4><div id="brand-filters"></div></div>
+        <div class="sb-section">
+          <h4>Price Range</h4>
+          <input type="range" class="price-range" id="price-range" min="0" max="5000" value="5000" step="50" oninput="onPriceRange(this.value)">
+          <div class="price-labels"><span>₹0</span><span>₹5000</span></div>
+          <div class="price-val" id="price-val">Up to ₹5000</div>
+        </div>
+        <div class="sb-section">
+          <h4>Min. Rating</h4>
+          <div class="star-filter">
+            <label class="star-opt on" onclick="setRating(0,this)"><input type="radio" name="rating" checked> <span>★★★★★</span><em>All</em></label>
+            <label class="star-opt" onclick="setRating(4,this)"><input type="radio" name="rating"> <span>★★★★☆</span><em>4+ stars</em></label>
+            <label class="star-opt" onclick="setRating(4.5,this)"><input type="radio" name="rating"> <span>★★★★★</span><em>4.5+ stars</em></label>
+          </div>
+        </div>
+        <div class="sb-section">
+          <h4>Discount</h4>
+          <div id="disc-filters">
+            <label class="chk-item"><input type="checkbox" value="10" onchange="applyAllFilters()"> <label>10% or more</label></label>
+            <label class="chk-item"><input type="checkbox" value="20" onchange="applyAllFilters()"> <label>20% or more</label></label>
+            <label class="chk-item"><input type="checkbox" value="30" onchange="applyAllFilters()"> <label>30% or more</label></label>
+            <label class="chk-item"><input type="checkbox" value="40" onchange="applyAllFilters()"> <label>40% or more</label></label>
+          </div>
+        </div>
+      </aside>
+
+      <div class="shop-main">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+          <button class="mob-filter-btn" onclick="openFilterDrawer()">🔧 Filters</button>
+          <div class="chip-row" id="chip-row" style="margin-bottom:0;flex:1">
+            <div class="chip on" onclick="setChip('All',this)">All</div>
+            <div class="chip" onclick="setChip('Lipstick',this)">💄 Lipstick</div>
+            <div class="chip" onclick="setChip('Skincare',this)">🧴 Skincare</div>
+            <div class="chip" onclick="setChip('Eye',this)">👁️ Eye</div>
+            <div class="chip" onclick="setChip('Nail',this)">💅 Nail</div>
+            <div class="chip" onclick="setChip('Perfume',this)">🌸 Perfume</div>
+          </div>
+        </div>
+        <div class="toolbar">
+          <div class="results-info" id="results-info"><strong>0</strong> products</div>
+          <div class="sort-wrap">
+            <label>Sort:</label>
+            <select class="sort-sel" id="sort-sel" onchange="applyAllFilters()">
+              <option value="default">Relevance</option>
+              <option value="price-low">Price: Low–High</option>
+              <option value="price-high">Price: High–Low</option>
+              <option value="rating">Top Rated</option>
+              <option value="discount">Highest Discount</option>
+              <option value="name">Name A–Z</option>
+            </select>
+          </div>
+          <div class="view-toggle">
+            <button class="view-btn on" id="vg" onclick="setView('grid')">⊞</button>
+            <button class="view-btn" id="vl" onclick="setView('list')">☰</button>
+          </div>
+        </div>
+        <div class="pgrid" id="shop-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="foot-inner">
+      <div class="foot-grid">
+        <div>
+          <div class="logo" style="cursor:default">
+            <div class="foot-logo-circle">
+              <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:28px">
+                <rect x="12" y="5" width="16" height="20" rx="4" fill="white" opacity=".9"/>
+                <rect x="14" y="3" width="12" height="6" rx="3" fill="white" opacity=".6"/>
+                <ellipse cx="20" cy="25" rx="8" ry="2.5" fill="white" opacity=".35"/>
+                <rect x="13" y="27" width="14" height="9" rx="3" fill="white" opacity=".3"/>
+              </svg>
+            </div>
+            <div class="logo-text">
+              <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:white">Elite Beauty Hub</div>
+              <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4)">Premium Cosmetics</div>
+            </div>
+          </div>
+          <p class="fdesc">Your one-stop destination for premium beauty products. Authentic, affordable, always glamorous.</p>
+          <div class="fsocials"><div class="fsbtn">📘</div><div class="fsbtn">📸</div><div class="fsbtn">🐦</div><div class="fsbtn">▶️</div></div>
+        </div>
+        <div class="fcol"><h4>Shop</h4><ul>
+          <li><a onclick="setChip('Lipstick',null);go('shop')">Lipstick</a></li>
+          <li><a onclick="setChip('Skincare',null);go('shop')">Skincare</a></li>
+          <li><a onclick="setChip('Perfume',null);go('shop')">Perfumes</a></li>
+          <li><a onclick="setChip('Nail',null);go('shop')">Nail Art</a></li>
+        </ul></div>
+        <div class="fcol"><h4>Help</h4><ul>
+          <li><a onclick="go('contact')">Contact Us</a></li>
+          <li><a onclick="go('faq')">FAQ</a></li>
+          <li><a onclick="go('shipping')">Shipping</a></li>
+          <li><a onclick="go('returns')">Returns</a></li>
+        </ul></div>
+        <div class="fcol"><h4>Company</h4><ul>
+          <li><a onclick="go('about')">About Us</a></li>
+          <li><a onclick="go('blog')">Blog</a></li>
+          <li><a onclick="go('privacy')">Privacy</a></li>
+          <li><a onclick="go('terms')">Terms</a></li>
+        </ul></div>
+      </div>
+      <div class="fbot"><span>© 2025 Elite Beauty Hub. All rights reserved.</span><span>Made with 💄 for beauty lovers</span></div>
+    </div>
+  </footer>
+</div>
+
+<!-- CART PAGE -->
+<div id="page-cart" class="page">
+  <div class="cart-page">
+    <div class="cart-inner">
+      <div class="cart-page-title">🛒 My Cart</div>
+      <div id="cart-content"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT PAGE -->
+<div id="page-contact" class="page">
+  <div class="contact-page">
+    <div class="contact-inner">
+      <div class="contact-grid">
+        <div class="contact-left">
+          <h1>Get In <span>Touch</span> 💌</h1>
+          <p>Reach out for product queries, order support, or collaborations. We're always happy to help!</p>
+          <div class="cinfo-cards">
+            <div class="cicard"><div class="ciicon">📍</div><div><h4>Visit Us</h4><p>Anna Nagar, Chennai, Tamil Nadu 600040</p></div></div>
+            <div class="cicard"><div class="ciicon">📞</div><div><h4>Call Us</h4><p>+91 63802 84958</p></div></div>
+            <div class="cicard"><div class="ciicon">📧</div><div><h4>Email</h4><p>hello@elitebeautyhub.in</p></div></div>
+            <div class="cicard"><div class="ciicon">🕐</div><div><h4>Hours</h4><p>Mon–Sat: 9am – 8pm IST</p></div></div>
+          </div>
+        </div>
+        <div class="cform-card">
+          <h2>Send a Message 💬</h2>
+          <div class="frow">
+            <div class="fg"><label>First Name</label><input type="text" placeholder="Your name"></div>
+            <div class="fg"><label>Last Name</label><input type="text" placeholder="Last name"></div>
+          </div>
+          <div class="fg"><label>Email</label><input type="email" placeholder="your@email.com"></div>
+          <div class="fg"><label>Phone</label><input type="tel" placeholder="+91 63802 84958"></div>
+          <div class="fg"><label>Subject</label>
+            <select><option>Product Enquiry</option><option>Order Support</option><option>Returns & Refunds</option><option>Collaboration</option><option>Other</option></select>
+          </div>
+          <div class="fg"><label>Message</label><textarea placeholder="Tell us how we can help..."></textarea></div>
+          <button class="btn-send" onclick="showToast('✅ Message sent! We will reply soon.');this.textContent='✅ Sent!'">Send Message ✨</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ PAGE -->
+<div id="page-faq" class="page">
+  <div class="info-page"><div class="info-inner">
+    <span class="back-link" onclick="go('shop')">← Back to Shop</span>
+    <div class="info-hero"><h1>Frequently Asked <span>Questions</span></h1><p>Find answers to common questions about products, orders, and services.</p></div>
+    <div class="info-card"><h2>Orders & Payments</h2>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">How do I place an order? <span class="faq-icon">+</span></div><div class="faq-a">Browse products, add items to cart, and click "Proceed to Checkout". Follow steps to enter address and payment. You'll receive confirmation SMS after placing order.</div></div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">What payment methods are accepted? <span class="faq-icon">+</span></div><div class="faq-a">UPI (GPay, PhonePe, Paytm, BHIM), Credit/Debit Cards, Net Banking, and Cash on Delivery for orders above ₹299.</div></div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Can I cancel my order? <span class="faq-icon">+</span></div><div class="faq-a">Yes! Orders can be cancelled within 2 hours. After that, contact support at hello@elitebeautyhub.in or call +91 63802 84958.</div></div>
+    </div>
+    <div class="info-card"><h2>Products & Quality</h2>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Are your products 100% authentic? <span class="faq-icon">+</span></div><div class="faq-a">Absolutely! All products are genuine and sourced directly from authorized distributors. Strict quality check for every item.</div></div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Do you sell cruelty-free products? <span class="faq-icon">+</span></div><div class="faq-a">Many products are cruelty-free and vegan. Look for the 🌿 icon. We constantly expand our cruelty-free range.</div></div>
+    </div>
+  </div></div>
+</div>
+
+<!-- SHIPPING PAGE -->
+<div id="page-shipping" class="page">
+  <div class="info-page"><div class="info-inner">
+    <span class="back-link" onclick="go('shop')">← Back to Shop</span>
+    <div class="info-hero"><h1>Shipping <span>Policy</span> 🚚</h1><p>Delivery timelines, charges, and tracking your order.</p></div>
+    <div class="info-card"><h2>Delivery Timelines</h2><h3>🏙️ Metro Cities</h3><p>Delhi, Mumbai, Bengaluru, Chennai — 1–2 business days after dispatch.</p><h3>🌆 Tier 2 & 3 Cities</h3><p>2–4 business days for most cities across India.</p><h3>🏔️ Remote Areas</h3><p>4–7 business days for J&K, Northeast, Andaman, Lakshadweep.</p></div>
+    <div class="info-card"><h2>Shipping Charges</h2><p>🆓 <strong>FREE shipping</strong> on all orders above ₹999. Below ₹999, flat charge of ₹99. Express delivery ₹149 extra (metro only).</p></div>
+    <div class="info-card"><h2>Order Tracking</h2><p>Once shipped, receive SMS with tracking link. We partner with Delhivery, Blue Dart, and Ekart.</p></div>
+  </div></div>
+</div>
+
+<!-- RETURNS PAGE -->
+<div id="page-returns" class="page">
+  <div class="info-page"><div class="info-inner">
+    <span class="back-link" onclick="go('shop')">← Back to Shop</span>
+    <div class="info-hero"><h1>Returns & <span>Refunds</span> 🔄</h1><p>Hassle-free 7-day return policy on most products.</p></div>
+    <div class="info-card"><h2>Return Policy</h2><p>Return most items within <strong>7 days</strong> of delivery for full refund or exchange. Items must be unused, in original packaging.</p><h3>✅ Eligible</h3><ul><li>Damaged or defective products</li><li>Wrong item delivered</li><li>Sealed unopened products</li></ul><h3>❌ Not Eligible</h3><ul><li>Opened/used cosmetics</li><li>Perfumes with broken seals</li><li>Clearance sale items</li></ul></div>
+    <div class="info-card"><h2>Refund Methods</h2><p>Refunds credited to original payment method. UPI/card refunds in 3–5 business days. COD via bank transfer in 5–7 business days.</p></div>
+  </div></div>
+</div>
+
+<!-- ABOUT PAGE -->
+<div id="page-about" class="page">
+  <div class="info-page"><div class="info-inner">
+    <span class="back-link" onclick="go('shop')">← Back to Shop</span>
+    <div class="info-hero"><h1>About <span>Elite Beauty Hub</span> 💄</h1><p>Bringing premium beauty to every doorstep across India since 2020.</p></div>
+    <div class="info-card"><h2>Our Story</h2><p>Elite Beauty Hub was founded in 2020 by beauty enthusiasts who believed premium cosmetics should be accessible to everyone. From a small Instagram shop in Chennai, we've grown into one of India's most trusted online beauty destinations serving over 2 lakh customers across 500+ cities.</p></div>
+    <div class="info-card"><h2>Our Values</h2><h3>✨ Authenticity First</h3><p>Every product is sourced directly from brands or authorized distributors. Zero tolerance for counterfeits.</p><h3>💚 Conscious Beauty</h3><p>We actively promote cruelty-free, vegan, and sustainable beauty products.</p><h3>❤️ Customer Love</h3><p>Our support team is available 6 days a week for the best experience.</p></div>
+    <div class="info-card"><h2>By the Numbers</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-top:6px">
+        <div style="background:var(--blush);border-radius:12px;padding:14px;text-align:center"><div style="font-size:26px;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">2L+</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Happy Customers</div></div>
+        <div style="background:var(--blush);border-radius:12px;padding:14px;text-align:center"><div style="font-size:26px;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">500+</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Products</div></div>
+        <div style="background:var(--blush);border-radius:12px;padding:14px;text-align:center"><div style="font-size:26px;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">50+</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Brands</div></div>
+        <div style="background:var(--blush);border-radius:12px;padding:14px;text-align:center"><div style="font-size:26px;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">4.8⭐</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Avg. Rating</div></div>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<!-- BLOG PAGE -->
+<div id="page-blog" class="page">
+  <div class="info-page"><div class="info-inner">
+    <span class="back-link" onclick="go('shop')">← Back to Shop</span>
+    <div class="info-hero"><h1>Beauty <span>Blog</span> ✍️</h1><p>Tips, trends, tutorials, and everything beauty from our experts.</p></div>
+    <div class="blog-grid">
+      <div class="blog-card"><div class="blog-img">💄</div><div class="blog-content"><div class="blog-tag">Lipstick Tips</div><div class="blog-title">10 Ways to Make Your Lipstick Last All Day</div><div class="blog-meta">June 2025 · 5 min read</div></div></div>
+      <div class="blog-card"><div class="blog-img">🧴</div><div class="blog-content"><div class="blog-tag">Skincare</div><div class="blog-title">The Ultimate Morning Skincare Routine for Indian Skin</div><div class="blog-meta">May 2025 · 8 min read</div></div></div>
+      <div class="blog-card"><div class="blog-img">🌸</div><div class="blog-content"><div class="blog-tag">Perfume</div><div class="blog-title">How to Choose the Perfect Fragrance for Summer</div><div class="blog-meta">May 2025 · 4 min read</div></div></div>
+      <div class="blog-card"><div class="blog-img">👁️</div><div class="blog-content"><div class="blog-tag">Eye Makeup</div><div class="blog-title">Smoky Eye Tutorial for Beginners — Step by Step</div><div class="blog-meta">April 2025 · 6 min read</div></div></div>
+      <div class="blog-card"><div class="blog-img">💅</div><div class="blog-content"><div class="blog-tag">Nail Art</div><div class="blog-title">5 Trending Nail Art Designs This Monsoon Season</div><div class="blog-meta">April 2025 · 3 min read</div></div></div>
+      <div class="blog-card"><div class="blog-img">🌿</div><div class="blog-content"><div class="blog-tag">Cruelty-Free</div><div class="blog-title">Best Cruelty-Free Brands Available in India 2025</div><div class="blog-meta">March 2025 · 7 min read</div></div></div>
+    </div>
+  </div></div>
+</div>
+
+<!-- PRIVACY PAGE -->
+<div id="page-privacy" class="page">
+  <div class="info-page"><div class="info-inner">
+    <span class="back-link" onclick="go('shop')">← Back to Shop</span>
+    <div class="info-hero"><h1>Privacy <span>Policy</span> 🔒</h1><p>Last updated: June 2025. Your privacy is important to us.</p></div>
+    <div class="info-card"><h2>Information We Collect</h2><p>Name, email address, delivery addresses, order history, and usage data to improve your experience.</p></div>
+    <div class="info-card"><h2>Data Security</h2><p>We use SSL encryption for all data transmissions. Payment details are handled by certified payment gateways and never stored on our servers.</p></div>
+    <div class="info-card"><h2>Your Rights</h2><p>You have the right to access, correct, or delete your personal data. Contact us at hello@elitebeautyhub.in with subject "Data Request".</p></div>
+  </div></div>
+</div>
+
+<!-- TERMS PAGE -->
+<div id="page-terms" class="page">
+  <div class="info-page"><div class="info-inner">
+    <span class="back-link" onclick="go('shop')">← Back to Shop</span>
+    <div class="info-hero"><h1>Terms & <span>Conditions</span> 📋</h1><p>Please read these terms carefully before using our platform.</p></div>
+    <div class="info-card"><h2>Acceptance of Terms</h2><p>By accessing Elite Beauty Hub, you agree to be bound by these Terms. If you disagree, please do not use our platform.</p></div>
+    <div class="info-card"><h2>Products & Pricing</h2><p>All prices are in Indian Rupees (INR) inclusive of applicable taxes. We reserve the right to change prices without prior notice.</p></div>
+    <div class="info-card"><h2>User Accounts</h2><ul><li>You must be 18 years or older to create an account.</li><li>You are responsible for maintaining account confidentiality.</li><li>We reserve the right to suspend accounts that violate our policies.</li></ul></div>
+    <div class="info-card"><h2>Governing Law</h2><p>These terms are governed by the laws of India. Disputes shall be subject to the exclusive jurisdiction of courts in Chennai, Tamil Nadu.</p></div>
+  </div></div>
+</div>
+
+<!-- ADD PRODUCT MODAL -->
+<div class="add-modal-overlay" id="add-modal">
+  <div class="add-modal">
+    <div class="add-modal-head">
+      <h2>✨ Add New Product</h2>
+      <button class="modal-close" onclick="closeAddProduct()">✕</button>
+    </div>
+    <div class="add-modal-body">
+      <div class="fg">
+        <label>Product Image <span style="color:var(--rose)">*</span></label>
+        <div class="img-upload-area" id="upload-area" onclick="document.getElementById('prod-img-inp').click()">
+          <input type="file" id="prod-img-inp" accept="image/*" onchange="onImageSelected(event)" style="display:none">
+          <div id="upload-hint">
+            <div class="upload-icon">🖼️</div>
+            <div style="font-size:13px;font-weight:600;color:var(--mid)">Click to upload product image</div>
+            <div class="img-upload-hint">JPG, PNG, WEBP — Image is required</div>
+          </div>
+          <img id="img-preview-el" class="img-preview" alt="preview">
+        </div>
+        <div class="img-required-note" id="img-required-note">⚠️ Product image is required</div>
+        <div class="crop-toolbar" id="crop-toolbar">
+          <div class="crop-ratio-row">
+            <span>Ratio:</span>
+            <button class="crop-btn active" onclick="setCropRatio(1,1,this)">1:1</button>
+            <button class="crop-btn" onclick="setCropRatio(4,3,this)">4:3</button>
+            <button class="crop-btn" onclick="setCropRatio(16,9,this)">16:9</button>
+            <button class="crop-btn" onclick="setCropRatio(0,0,this)">Free</button>
+          </div>
+        </div>
+        <div class="crop-container" id="crop-container">
+          <canvas id="crop-canvas" class="crop-canvas"></canvas>
+          <div class="crop-overlay" id="crop-overlay">
+            <div class="crop-box" id="crop-box">
+              <div class="crop-handle tl" data-h="tl"></div>
+              <div class="crop-handle tr" data-h="tr"></div>
+              <div class="crop-handle bl" data-h="bl"></div>
+              <div class="crop-handle br" data-h="br"></div>
+            </div>
+          </div>
+        </div>
+        <div class="crop-confirm-row" id="crop-confirm-row">
+          <button class="crop-btn" onclick="resetCrop()">↺ Reset</button>
+          <button class="crop-btn active" onclick="applyCrop()">✂️ Apply Crop</button>
+        </div>
+      </div>
+      <div class="fg"><label>Product Name <span style="color:var(--rose)">*</span></label><input type="text" id="prod-name" placeholder="e.g. Velvet Matte Lipstick"></div>
+      <div class="frow2">
+        <div class="fg"><label>Brand <span style="color:var(--rose)">*</span></label><input type="text" id="prod-brand" placeholder="e.g. Lakme"></div>
+        <div class="fg"><label>Category <span style="color:var(--rose)">*</span></label>
+          <select id="prod-cat"><option value="">-- Select --</option><option>Lipstick</option><option>Skincare</option><option>Eye</option><option>Nail</option><option>Perfume</option><option>Other</option></select>
+        </div>
+      </div>
+      <div class="frow2">
+        <div class="fg"><label>Selling Price (₹) <span style="color:var(--rose)">*</span></label><input type="number" id="prod-price" placeholder="599" min="1"></div>
+        <div class="fg"><label>Original Price (₹) <span style="color:var(--rose)">*</span></label><input type="number" id="prod-original" placeholder="999" min="1"></div>
+      </div>
+      <div class="frow2">
+        <div class="fg"><label>Rating (0–5)</label><input type="number" id="prod-rating" placeholder="4.5" min="0" max="5" step="0.1"></div>
+        <div class="fg"><label>Badge</label>
+          <select id="prod-badge"><option>New</option><option>Bestseller</option><option>Hot</option><option>Trending</option><option>Sale</option><option>Premium</option><option>Luxury</option></select>
+        </div>
+      </div>
+    </div>
+    <div class="add-modal-foot">
+      <button class="btn-back" onclick="closeAddProduct()">Cancel</button>
+      <button class="btn-next" onclick="saveProduct()">✅ Add Product</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="del-modal-overlay" id="del-modal">
+  <div class="del-modal">
+    <div class="del-icon">🗑️</div>
+    <h3>Delete Product?</h3>
+    <p>Are you sure you want to remove <strong id="del-product-name">this product</strong>? This cannot be undone.</p>
+    <div class="del-modal-btns">
+      <button class="btn-cancel" onclick="closeDelModal()">Cancel</button>
+      <button class="btn-delconf" onclick="confirmDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="modal-overlay" id="checkout-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="modal-title">Checkout</h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="step-indicator" id="step-indicator">
+        <div class="step active" id="si-1"><div class="step-num">1</div><div class="step-lbl">Address</div></div>
+        <div class="step" id="si-2"><div class="step-num">2</div><div class="step-lbl">Payment</div></div>
+        <div class="step" id="si-3"><div class="step-num">3</div><div class="step-lbl">Review</div></div>
+      </div>
+      <div class="step-content active" id="step-1">
+        <div class="section-title">📍 Delivery Address</div>
+        <label class="addr-saved on" id="addr-s1"><input type="radio" name="addr" value="s1" checked onchange="selectAddr('s1')"><div class="addr-saved-text"><h4>Home</h4><p>12/3 Rose Street, T. Nagar, Chennai - 600017, Tamil Nadu</p></div></label>
+        <label class="addr-saved" id="addr-s2"><input type="radio" name="addr" value="s2" onchange="selectAddr('s2')"><div class="addr-saved-text"><h4>Work</h4><p>45 Park Avenue, Anna Nagar, Chennai - 600040, Tamil Nadu</p></div></label>
+        <div class="or-divider">+ Add New Address</div>
+        <div class="addr-grid">
+          <div class="fg"><label>Full Name</label><input type="text" id="addr-name" placeholder="Your full name"></div>
+          <div class="fg"><label>Phone</label><input type="tel" id="addr-phone" placeholder="+91 XXXXX XXXXX"></div>
+          <div class="fg full"><label>Address Line 1</label><input type="text" id="addr-line1" placeholder="House/Flat no., Street, Area"></div>
+          <div class="fg full"><label>Address Line 2</label><input type="text" id="addr-line2" placeholder="Landmark, near..."></div>
+          <div class="fg"><label>City</label><input type="text" id="addr-city" placeholder="Chennai"></div>
+          <div class="fg"><label>State</label><input type="text" id="addr-state" placeholder="Tamil Nadu"></div>
+          <div class="fg"><label>Pincode</label><input type="text" id="addr-pin" placeholder="600001"></div>
+          <div class="fg"><label>Type</label><select id="addr-type"><option>Home</option><option>Work</option><option>Other</option></select></div>
+        </div>
+      </div>
+      <div class="step-content" id="step-2">
+        <div class="section-title">💳 Payment Method</div>
+        <div class="pay-options">
+          <label class="pay-opt selected" onclick="selPay('upi',this)"><input type="radio" name="pay" value="upi" checked><div class="pay-icon" style="background:#e8f5e9">📱</div><div class="pay-text"><h4>UPI</h4><p>GPay, PhonePe, Paytm, BHIM</p></div></label>
+          <div id="upi-section">
+            <div class="upi-apps">
+              <div class="upi-app sel" id="upi-gpay" onclick="selUpiApp('gpay')"><div style="width:32px;height:32px;background:white;border:1px solid #e8eaed;border-radius:7px;display:flex;align-items:center;justify-content:center"><svg width="24" height="12" viewBox="0 0 24 12"><text x="0" y="9" font-family="Arial" font-size="9" font-weight="bold"><tspan fill="#4285F4">G</tspan><tspan fill="#EA4335">P</tspan><tspan fill="#FBBC05">a</tspan><tspan fill="#4285F4">y</tspan></text></svg></div><span class="upi-label">GPay</span></div>
+              <div class="upi-app" id="upi-phonepe" onclick="selUpiApp('phonepe')"><div style="width:32px;height:32px;background:#5f259f;border-radius:7px;display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:900">Pe</div><span class="upi-label">PhonePe</span></div>
+              <div class="upi-app" id="upi-paytm" onclick="selUpiApp('paytm')"><div style="width:32px;height:32px;background:#00baf2;border-radius:7px;display:flex;align-items:center;justify-content:center;color:white;font-size:8px;font-weight:700">Paytm</div><span class="upi-label">Paytm</span></div>
+              <div class="upi-app" id="upi-bhim" onclick="selUpiApp('bhim')"><div style="width:32px;height:32px;background:white;border:1px solid #ddd;border-radius:7px;overflow:hidden;display:flex;flex-direction:column"><div style="flex:1;background:#FF9933"></div><div style="flex:1;background:white;display:flex;align-items:center;justify-content:center"><div style="width:6px;height:6px;border-radius:50%;border:1.5px solid #000080"></div></div><div style="flex:1;background:#138808"></div></div><span class="upi-label">BHIM</span></div>
+            </div>
+            <div class="upi-input"><label>UPI ID (Optional)</label><input type="text" placeholder="yourname@upi"></div>
+          </div>
+          <label class="pay-opt" onclick="selPay('card',this)"><input type="radio" name="pay" value="card"><div class="pay-icon" style="background:#e3f2fd">💳</div><div class="pay-text"><h4>Credit / Debit Card</h4><p>Visa, Mastercard, RuPay</p></div></label>
+          <div id="card-section" style="display:none"><div class="card-fields"><div class="fg" style="margin:0"><label>Card Number</label><input type="text" placeholder="XXXX XXXX XXXX XXXX" maxlength="19"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:9px"><div class="fg" style="margin:0"><label>Expiry</label><input type="text" placeholder="MM/YY" maxlength="5"></div><div class="fg" style="margin:0"><label>CVV</label><input type="password" placeholder="•••" maxlength="3"></div></div><div class="fg" style="margin:0"><label>Name on Card</label><input type="text" placeholder="Your Name"></div></div></div>
+          <label class="pay-opt" onclick="selPay('netbank',this)"><input type="radio" name="pay" value="netbank"><div class="pay-icon" style="background:#fff3e0">🏦</div><div class="pay-text"><h4>Net Banking</h4><p>All major banks supported</p></div></label>
+          <label class="pay-opt" onclick="selPay('cod',this)"><input type="radio" name="pay" value="cod"><div class="pay-icon" style="background:#fce4ec">💵</div><div class="pay-text"><h4>Cash on Delivery</h4><p>Pay when order arrives</p></div></label>
+        </div>
+      </div>
+      <div class="step-content" id="step-3">
+        <div class="section-title">📦 Order Review</div>
+        <div class="addr-review" id="review-addr"></div>
+        <div class="section-title" style="margin-top:13px">🛒 Items</div>
+        <div class="order-items" id="review-items"></div>
+        <div class="review-total" id="review-total"></div>
+      </div>
+      <div class="step-content" id="step-success">
+        <div class="success-screen">
+          <div class="success-icon">🎉</div>
+          <h2>Order Placed!</h2>
+          <p>Thank you for shopping at <strong>Elite Beauty Hub</strong>!</p>
+          <div class="order-id" id="order-id-display"></div>
+          <p style="font-size:12.5px;color:var(--muted)">Confirmation SMS sent.<br>Estimated delivery: <strong>2–4 business days</strong> 🚚</p>
+          <button class="btn-next" style="margin-top:16px;max-width:200px" onclick="closeModal();go('shop')">Continue Shopping 💄</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot" id="modal-foot">
+      <button class="btn-back" id="btn-back" onclick="modalBack()">← Back</button>
+      <button class="btn-next" id="btn-next" onclick="modalNext()">Continue →</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
