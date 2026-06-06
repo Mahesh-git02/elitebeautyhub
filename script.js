@@ -4,12 +4,12 @@
 let currentUser = null;
 
 function doLogin() {
-  const email = document.getElementById('login-email').value.trim();
+  const email    = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
-  if (!email || !password) { showToast('⚠️ Email மற்றும் Password enter பண்ணுங்க'); return; }
-  if (!email.includes('@')) { showToast('⚠️ சரியான Email enter பண்ணுங்க'); return; }
+  if (!email || !password)           { showToast('⚠️ Email மற்றும் Password enter பண்ணுங்க'); return; }
+  if (!email.includes('@'))          { showToast('⚠️ சரியான Email enter பண்ணுங்க'); return; }
   const accounts = JSON.parse(localStorage.getItem('ebh_accounts') || '{}');
-  if (!accounts[email]) { showToast('❌ Account இல்லை. Register பண்ணுங்க!'); return; }
+  if (!accounts[email])              { showToast('❌ Account இல்லை. Register பண்ணுங்க!'); return; }
   if (accounts[email].password !== password) { showToast('❌ Password தவறு. மீண்டும் try பண்ணுங்க'); return; }
   currentUser = { email, name: accounts[email].name, uid: 'user_' + btoa(email) };
   localStorage.setItem('ebh_user', JSON.stringify(currentUser));
@@ -17,14 +17,14 @@ function doLogin() {
 }
 
 function doRegister() {
-  const name = document.getElementById('reg-name').value.trim();
-  const email = document.getElementById('reg-email').value.trim();
+  const name     = document.getElementById('reg-name').value.trim();
+  const email    = document.getElementById('reg-email').value.trim();
   const password = document.getElementById('reg-password').value;
-  if (!name) { showToast('⚠️ பெயர் enter பண்ணுங்க'); return; }
-  if (!email || !email.includes('@')) { showToast('⚠️ சரியான Email enter பண்ணுங்க'); return; }
+  if (!name)                         { showToast('⚠️ பெயர் enter பண்ணுங்க'); return; }
+  if (!email || !email.includes('@')){ showToast('⚠️ சரியான Email enter பண்ணுங்க'); return; }
   if (!password || password.length < 6) { showToast('⚠️ Password minimum 6 characters வேணும்'); return; }
   const accounts = JSON.parse(localStorage.getItem('ebh_accounts') || '{}');
-  if (accounts[email]) { showToast('⚠️ இந்த Email already registered. Login பண்ணுங்க!'); return; }
+  if (accounts[email])               { showToast('⚠️ இந்த Email already registered. Login பண்ணுங்க!'); return; }
   accounts[email] = { name, password };
   localStorage.setItem('ebh_accounts', JSON.stringify(accounts));
   currentUser = { email, name, uid: 'user_' + btoa(email) };
@@ -69,13 +69,14 @@ function requireAuth(cb) {
 }
 
 function updateUserNav() {
-  const area = document.getElementById('user-nav-area');
+  const area    = document.getElementById('user-nav-area');
   const mobLink = document.getElementById('mob-auth-link');
   if (currentUser) {
     const displayName = currentUser.name || currentUser.email || 'User';
-    const guestTag = currentUser.isGuest ? ' <small style="color:var(--muted)">(Guest)</small>' : '';
-    area.innerHTML = `<span class="user-pill">👤 ${displayName.split(' ')[0]}${guestTag}</span>
-      <button class="nav-btn" onclick="logout()" style="padding:7px 10px">🚪</button>`;
+    const guestTag    = currentUser.isGuest ? ' <small style="color:var(--muted)">(Guest)</small>' : '';
+    area.innerHTML = `
+      <span class="user-pill">👤 ${displayName.split(' ')[0]}${guestTag}</span>
+      <button class="nav-btn logout-btn" onclick="logout()" style="padding:7px 10px;display:inline-flex">🚪</button>`;
     mobLink.textContent = '🚪 Logout';
     mobLink.onclick = () => { logout(); closeMob(); };
   } else {
@@ -92,6 +93,7 @@ function switchAuthTab(tab, el) {
   document.getElementById(tab + '-form').classList.add('active');
 }
 
+// Restore session on load
 (function restoreSession() {
   try {
     const saved = JSON.parse(localStorage.getItem('ebh_user') || 'null');
@@ -145,38 +147,38 @@ function cartImgHtml(i) {
 }
 
 const baseProducts = [
-  {id:1,  name:"Velvet Matte Lipstick",     brand:"Lakme",            cat:"Lipstick", dataUrl:"images/lipstick.jpeg",     price:599,  original:999,  rating:4.8, reviews:"2.1k", badge:"Bestseller", userAdded:false},
-  {id:2,  name:"Satin Rouge Lipstick",      brand:"Maybelline",       cat:"Lipstick", dataUrl:"images/satin.jpg",         price:449,  original:699,  rating:4.6, reviews:"1.4k", badge:"Hot",        userAdded:false},
-  {id:3,  name:"Berry Lip Gloss Set",       brand:"NYX",              cat:"Lipstick", dataUrl:"images/berry.jpg",         price:399,  original:649,  rating:4.5, reviews:"876",  badge:"Value",      userAdded:false},
-  {id:4,  name:"Rose Glow Serum",           brand:"Minimalist",       cat:"Skincare", dataUrl:"images/roseglowserum.jpeg",price:1299, original:1899, rating:4.9, reviews:"3.4k", badge:"New",        userAdded:false},
-  {id:5,  name:"Hydra Boost Moisturizer",   brand:"Cetaphil",         cat:"Skincare", dataUrl:"images/moisturizer.jpeg",  price:749,  original:1099, rating:4.8, reviews:"2.7k", badge:"Bestseller", userAdded:false},
-  {id:6,  name:"Vitamin C Cream",           brand:"Dot & Key",        cat:"Skincare", dataUrl:"images/vitamincream.jpg",  price:899,  original:1299, rating:4.7, reviews:"1.9k", badge:"Trending",   userAdded:false},
-  {id:7,  name:"Sunscreen SPF 50",          brand:"Minimalist",       cat:"Skincare", dataUrl:"images/sunscreen.jpeg",    price:549,  original:799,  rating:4.8, reviews:"4.1k", badge:"Bestseller", userAdded:false},
-  {id:8,  name:"Smoky Eye Palette",         brand:"NYX",              cat:"Eye",      dataUrl:"images/smokypallete.jpg",  price:899,  original:1499, rating:4.7, reviews:"1.8k", badge:"Sale",       userAdded:false},
-  {id:9,  name:"Liquid Highlighter",        brand:"Lakme",            cat:"Eye",      dataUrl:"images/liquidhighlighter.jpg",price:649,original:899, rating:4.7, reviews:"1.3k", badge:"Trending",   userAdded:false},
-  {id:10, name:"Waterproof Kajal",          brand:"Maybelline",       cat:"Eye",      dataUrl:"images/kajal.jfif",        price:249,  original:399,  rating:4.6, reviews:"3.2k", badge:"Bestseller", userAdded:false},
-  {id:11, name:"Glitter Nail Polish",       brand:"OPI",              cat:"Nail",     dataUrl:"images/glitter.jfif",      price:299,  original:449,  rating:4.6, reviews:"956",  badge:"Hot",        userAdded:false},
-  {id:12, name:"French Manicure Kit",       brand:"Colorbar",         cat:"Nail",     dataUrl:"images/manicure2.jfif",    price:499,  original:799,  rating:4.5, reviews:"712",  badge:"New",        userAdded:false},
-  {id:13, name:"Bloom Eau de Parfum",       brand:"Chanel",           cat:"Perfume",  dataUrl:"images/bloom.jpg",         price:1799, original:2499, rating:4.9, reviews:"4.2k", badge:"Luxury",     userAdded:false},
-  {id:14, name:"Rose Oud Attar",            brand:"Forest Essentials", cat:"Perfume", dataUrl:"images/attar2.jfif",       price:1299, original:1899, rating:4.8, reviews:"2.1k", badge:"Premium",    userAdded:false},
-  {id:15, name:"Midnight Musk Spray",       brand:"Chanel",           cat:"Perfume",  dataUrl:"images/midnightmusk.jfif", price:999,  original:1499, rating:4.7, reviews:"1.6k", badge:"Trending",   userAdded:false},
-  {id:16, name:"Nourishing Hair Serum",     brand:"Dot & Key",        cat:"Skincare", dataUrl:"images/nourishing.jpeg",   price:699,  original:999,  rating:4.6, reviews:"1.1k", badge:"New",        userAdded:false},
-  {id:17, name:"Aloe Vera Face Wash",       brand:"Mamaearth",        cat:"Skincare", dataUrl:"images/aloevera.jfif",     price:349,  original:499,  rating:4.5, reviews:"1.8k", badge:"Trending",   userAdded:false},
-  {id:18, name:"Charcoal Face Mask",        brand:"WOW Skin Science", cat:"Skincare", dataUrl:"images/charcoalmask.jfif", price:499,  original:699,  rating:4.6, reviews:"1.2k", badge:"Hot",        userAdded:false},
-  {id:19, name:"Gold Facial Kit",           brand:"VLCC",             cat:"Skincare", dataUrl:"images/goldfacialkit.jfif",price:899,  original:1299, rating:4.7, reviews:"2.3k", badge:"Bestseller", userAdded:false},
-  {id:20, name:"Matte Foundation",          brand:"Lakme",            cat:"Face",     dataUrl:"images/MatteFoundation.jfif",price:699,original:999,  rating:4.8, reviews:"3.1k", badge:"Bestseller", userAdded:false},
-  {id:21, name:"Compact Powder",            brand:"Maybelline",       cat:"Face",     dataUrl:"images/compactpowder.jfif",price:399,  original:599,  rating:4.6, reviews:"2.0k", badge:"Hot",        userAdded:false},
-  {id:22, name:"Blush Glow Palette",        brand:"Colorbar",         cat:"Face",     dataUrl:"images/blushpalette.jfif", price:799,  original:1199, rating:4.7, reviews:"1.4k", badge:"Trending",   userAdded:false},
-  {id:23, name:"Curl Defining Mascara",     brand:"Maybelline",       cat:"Eye",      dataUrl:"images/mascara.jfif",      price:499,  original:699,  rating:4.8, reviews:"3.6k", badge:"Bestseller", userAdded:false},
-  {id:24, name:"Eyebrow Pencil",            brand:"Lakme",            cat:"Eye",      dataUrl:"images/eyebrowpencil.jfif",price:299,  original:449,  rating:4.5, reviews:"1.1k", badge:"New",        userAdded:false},
-  {id:25, name:"Gel Eyeliner",              brand:"L'Oreal",          cat:"Eye",      dataUrl:"images/geleyeliner.jfif",  price:549,  original:799,  rating:4.7, reviews:"1.7k", badge:"Trending",   userAdded:false},
-  {id:26, name:"Long Stay Nail Paint",      brand:"Colorbar",         cat:"Nail",     dataUrl:"images/nailpaint.jfif",    price:249,  original:399,  rating:4.6, reviews:"1.3k", badge:"Sale",       userAdded:false},
-  {id:27, name:"Nail Art Stickers",         brand:"Faces Canada",     cat:"Nail",     dataUrl:"images/nailstickers.jfif", price:199,  original:299,  rating:4.4, reviews:"789",  badge:"New",        userAdded:false},
-  {id:28, name:"Jasmine Body Mist",         brand:"The Body Shop",    cat:"Perfume",  dataUrl:"images/bodymist.jfif",     price:899,  original:1299, rating:4.7, reviews:"2.2k", badge:"Popular",    userAdded:false},
-  {id:29, name:"Vanilla Dream Perfume",     brand:"Bella Vita",       cat:"Perfume",  dataUrl:"images/vanilladream.jfif", price:799,  original:1199, rating:4.6, reviews:"1.5k", badge:"Trending",   userAdded:false},
-  {id:30, name:"Hair Growth Oil",           brand:"Indulekha",        cat:"Haircare", dataUrl:"images/hairoil.jfif",      price:499,  original:699,  rating:4.7, reviews:"3.8k", badge:"Bestseller", userAdded:false},
-  {id:31, name:"Keratin Shampoo",           brand:"Tresemme",         cat:"Haircare", dataUrl:"images/keratinshampoo.jfif",price:649, original:899,  rating:4.6, reviews:"2.5k", badge:"Popular",    userAdded:false},
-  {id:32, name:"Hair Spa Cream",            brand:"L'Oreal",          cat:"Haircare", dataUrl:"images/hairspacream.jfif", price:799,  original:1199, rating:4.8, reviews:"1.9k", badge:"Premium",    userAdded:false}
+  {id:1,  name:"Velvet Matte Lipstick",      brand:"Lakme",            cat:"Lipstick", dataUrl:"images/lipstick.jpeg",         price:599,  original:999,  rating:4.8, reviews:"2.1k", badge:"Bestseller", userAdded:false},
+  {id:2,  name:"Satin Rouge Lipstick",       brand:"Maybelline",       cat:"Lipstick", dataUrl:"images/satin.jpg",             price:449,  original:699,  rating:4.6, reviews:"1.4k", badge:"Hot",        userAdded:false},
+  {id:3,  name:"Berry Lip Gloss Set",        brand:"NYX",              cat:"Lipstick", dataUrl:"images/berry.jpg",             price:399,  original:649,  rating:4.5, reviews:"876",  badge:"Value",      userAdded:false},
+  {id:4,  name:"Rose Glow Serum",            brand:"Minimalist",       cat:"Skincare", dataUrl:"images/roseglowserum.jpeg",    price:1299, original:1899, rating:4.9, reviews:"3.4k", badge:"New",        userAdded:false},
+  {id:5,  name:"Hydra Boost Moisturizer",    brand:"Cetaphil",         cat:"Skincare", dataUrl:"images/moisturizer.jpeg",      price:749,  original:1099, rating:4.8, reviews:"2.7k", badge:"Bestseller", userAdded:false},
+  {id:6,  name:"Vitamin C Cream",            brand:"Dot & Key",        cat:"Skincare", dataUrl:"images/vitamincream.jpg",      price:899,  original:1299, rating:4.7, reviews:"1.9k", badge:"Trending",   userAdded:false},
+  {id:7,  name:"Sunscreen SPF 50",           brand:"Minimalist",       cat:"Skincare", dataUrl:"images/sunscreen.jpeg",        price:549,  original:799,  rating:4.8, reviews:"4.1k", badge:"Bestseller", userAdded:false},
+  {id:8,  name:"Smoky Eye Palette",          brand:"NYX",              cat:"Eye",      dataUrl:"images/smokypallete.jpg",      price:899,  original:1499, rating:4.7, reviews:"1.8k", badge:"Sale",       userAdded:false},
+  {id:9,  name:"Liquid Highlighter",         brand:"Lakme",            cat:"Eye",      dataUrl:"images/liquidhighlighter.jpg", price:649,  original:899,  rating:4.7, reviews:"1.3k", badge:"Trending",   userAdded:false},
+  {id:10, name:"Waterproof Kajal",           brand:"Maybelline",       cat:"Eye",      dataUrl:"images/kajal.jfif",            price:249,  original:399,  rating:4.6, reviews:"3.2k", badge:"Bestseller", userAdded:false},
+  {id:11, name:"Glitter Nail Polish",        brand:"OPI",              cat:"Nail",     dataUrl:"images/glitter.jfif",          price:299,  original:449,  rating:4.6, reviews:"956",  badge:"Hot",        userAdded:false},
+  {id:12, name:"French Manicure Kit",        brand:"Colorbar",         cat:"Nail",     dataUrl:"images/manicure2.jfif",        price:499,  original:799,  rating:4.5, reviews:"712",  badge:"New",        userAdded:false},
+  {id:13, name:"Bloom Eau de Parfum",        brand:"Chanel",           cat:"Perfume",  dataUrl:"images/bloom.jpg",             price:1799, original:2499, rating:4.9, reviews:"4.2k", badge:"Luxury",     userAdded:false},
+  {id:14, name:"Rose Oud Attar",             brand:"Forest Essentials", cat:"Perfume", dataUrl:"images/attar2.jfif",           price:1299, original:1899, rating:4.8, reviews:"2.1k", badge:"Premium",    userAdded:false},
+  {id:15, name:"Midnight Musk Spray",        brand:"Chanel",           cat:"Perfume",  dataUrl:"images/midnightmusk.jfif",     price:999,  original:1499, rating:4.7, reviews:"1.6k", badge:"Trending",   userAdded:false},
+  {id:16, name:"Nourishing Hair Serum",      brand:"Dot & Key",        cat:"Skincare", dataUrl:"images/nourishing.jpeg",       price:699,  original:999,  rating:4.6, reviews:"1.1k", badge:"New",        userAdded:false},
+  {id:17, name:"Aloe Vera Face Wash",        brand:"Mamaearth",        cat:"Skincare", dataUrl:"images/aloevera.jfif",         price:349,  original:499,  rating:4.5, reviews:"1.8k", badge:"Trending",   userAdded:false},
+  {id:18, name:"Charcoal Face Mask",         brand:"WOW Skin Science", cat:"Skincare", dataUrl:"images/charcoalmask.jfif",     price:499,  original:699,  rating:4.6, reviews:"1.2k", badge:"Hot",        userAdded:false},
+  {id:19, name:"Gold Facial Kit",            brand:"VLCC",             cat:"Skincare", dataUrl:"images/goldfacialkit.jfif",    price:899,  original:1299, rating:4.7, reviews:"2.3k", badge:"Bestseller", userAdded:false},
+  {id:20, name:"Matte Foundation",           brand:"Lakme",            cat:"Face",     dataUrl:"images/MatteFoundation.jfif",  price:699,  original:999,  rating:4.8, reviews:"3.1k", badge:"Bestseller", userAdded:false},
+  {id:21, name:"Compact Powder",             brand:"Maybelline",       cat:"Face",     dataUrl:"images/compactpowder.jfif",    price:399,  original:599,  rating:4.6, reviews:"2.0k", badge:"Hot",        userAdded:false},
+  {id:22, name:"Blush Glow Palette",         brand:"Colorbar",         cat:"Face",     dataUrl:"images/blushpalette.jfif",     price:799,  original:1199, rating:4.7, reviews:"1.4k", badge:"Trending",   userAdded:false},
+  {id:23, name:"Curl Defining Mascara",      brand:"Maybelline",       cat:"Eye",      dataUrl:"images/mascara.jfif",          price:499,  original:699,  rating:4.8, reviews:"3.6k", badge:"Bestseller", userAdded:false},
+  {id:24, name:"Eyebrow Pencil",             brand:"Lakme",            cat:"Eye",      dataUrl:"images/eyebrowpencil.jfif",    price:299,  original:449,  rating:4.5, reviews:"1.1k", badge:"New",        userAdded:false},
+  {id:25, name:"Gel Eyeliner",               brand:"L'Oreal",          cat:"Eye",      dataUrl:"images/geleyeliner.jfif",      price:549,  original:799,  rating:4.7, reviews:"1.7k", badge:"Trending",   userAdded:false},
+  {id:26, name:"Long Stay Nail Paint",       brand:"Colorbar",         cat:"Nail",     dataUrl:"images/nailpaint.jfif",        price:249,  original:399,  rating:4.6, reviews:"1.3k", badge:"Sale",       userAdded:false},
+  {id:27, name:"Nail Art Stickers",          brand:"Faces Canada",     cat:"Nail",     dataUrl:"images/nailstickers.jfif",     price:199,  original:299,  rating:4.4, reviews:"789",  badge:"New",        userAdded:false},
+  {id:28, name:"Jasmine Body Mist",          brand:"The Body Shop",    cat:"Perfume",  dataUrl:"images/bodymist.jfif",         price:899,  original:1299, rating:4.7, reviews:"2.2k", badge:"Popular",    userAdded:false},
+  {id:29, name:"Vanilla Dream Perfume",      brand:"Bella Vita",       cat:"Perfume",  dataUrl:"images/vanilladream.jfif",     price:799,  original:1199, rating:4.6, reviews:"1.5k", badge:"Trending",   userAdded:false},
+  {id:30, name:"Hair Growth Oil",            brand:"Indulekha",        cat:"Haircare", dataUrl:"images/hairoil.jfif",          price:499,  original:699,  rating:4.7, reviews:"3.8k", badge:"Bestseller", userAdded:false},
+  {id:31, name:"Keratin Shampoo",            brand:"Tresemme",         cat:"Haircare", dataUrl:"images/keratinshampoo.jfif",   price:649,  original:899,  rating:4.6, reviews:"2.5k", badge:"Popular",    userAdded:false},
+  {id:32, name:"Hair Spa Cream",             brand:"L'Oreal",          cat:"Haircare", dataUrl:"images/hairspacream.jfif",     price:799,  original:1199, rating:4.8, reviews:"1.9k", badge:"Premium",    userAdded:false}
 ];
 
 function loadUserProductsLocal() {
@@ -187,8 +189,8 @@ function saveUserProductsLocal(p) {
 }
 
 let userProducts = loadUserProductsLocal();
-let products = [...baseProducts];
-let nextId = baseProducts.length + 1;
+let products     = [...baseProducts];
+let nextId       = baseProducts.length + 1;
 let cart = [], wishlist = [];
 let state = { cat:'All', brands:[], maxPrice:5000, minRating:0, minDisc:0, sort:'default', view:'grid', search:'' };
 let checkoutStep = 1, selectedAddr = 's1', selectedPay = 'upi', buyNowItem = null;
@@ -205,7 +207,7 @@ function disc(p) { return Math.round((1 - p.price / p.original) * 100); }
 
 function rebuildProducts() {
   products = [...baseProducts, ...userProducts];
-  nextId = products.reduce((m,p) => Math.max(m, p.id), 0) + 1;
+  nextId   = products.reduce((m,p) => Math.max(m, p.id), 0) + 1;
 }
 
 // =============================================
@@ -222,7 +224,8 @@ function hcardImgHtml(p) {
 
 function renderHCard(p) {
   const d = disc(p);
-  return `<div class="hcard" onclick="addCart(${p.id});showToast('🛒 ${p.name.replace(/'/g,"\\'")} added!')">
+  const safeName = p.name.replace(/'/g,"\\'");
+  return `<div class="hcard" onclick="addCart(${p.id});showToast('🛒 ${safeName} added!')">
     <div class="hcard-img">
       ${hcardImgHtml(p)}
       <span class="hcard-badge">${p.badge}</span>
@@ -241,30 +244,18 @@ function renderHCard(p) {
 }
 
 function renderHorizontalSections() {
-  // Trending: badge is Trending or Hot, sorted by rating
-  const trending = [...products]
-    .filter(p => ['Trending','Hot','Bestseller'].includes(p.badge))
-    .sort((a,b) => b.rating - a.rating)
-    .slice(0, 12);
+  const trending   = [...products].filter(p => ['Trending','Hot','Bestseller'].includes(p.badge)).sort((a,b)=>b.rating-a.rating).slice(0,12);
+  const skincare   = [...products].filter(p => p.cat === 'Skincare').sort((a,b)=>b.rating-a.rating).slice(0,12);
+  const bestseller = [...products].sort((a,b)=>b.rating-a.rating).slice(0,12);
 
-  // Skincare picks
-  const skincare = [...products]
-    .filter(p => p.cat === 'Skincare')
-    .sort((a,b) => b.rating - a.rating)
-    .slice(0, 12);
-
-  // Bestsellers: top rated overall
-  const bestsellers = [...products]
-    .sort((a,b) => b.rating - a.rating)
-    .slice(0, 12);
-
+  const empty = '<p style="color:var(--muted);padding:20px;font-size:13px">No products yet</p>';
   const trendEl = document.getElementById('htrack-trending');
   const skinEl  = document.getElementById('htrack-skincare');
   const bestEl  = document.getElementById('htrack-bestseller');
 
-  if (trendEl) trendEl.innerHTML = trending.length ? trending.map(renderHCard).join('') : '<p style="color:var(--muted);padding:20px;font-size:13px">No products yet</p>';
-  if (skinEl)  skinEl.innerHTML  = skincare.length  ? skincare.map(renderHCard).join('')  : '<p style="color:var(--muted);padding:20px;font-size:13px">No skincare products</p>';
-  if (bestEl)  bestEl.innerHTML  = bestsellers.length ? bestsellers.map(renderHCard).join('') : '<p style="color:var(--muted);padding:20px;font-size:13px">No products yet</p>';
+  if (trendEl) trendEl.innerHTML = trending.length   ? trending.map(renderHCard).join('')   : empty;
+  if (skinEl)  skinEl.innerHTML  = skincare.length   ? skincare.map(renderHCard).join('')   : '<p style="color:var(--muted);padding:20px;font-size:13px">No skincare products</p>';
+  if (bestEl)  bestEl.innerHTML  = bestseller.length ? bestseller.map(renderHCard).join('') : empty;
 }
 
 function scrollHTrack(trackId, dir) {
@@ -289,8 +280,7 @@ function onMobPriceRange(v) {
   state.maxPrice = parseInt(v);
   document.getElementById('mob-price-val').textContent = 'Up to ₹' + v;
   const desktopRange = document.getElementById('price-range');
-  if (desktopRange) desktopRange.value = v;
-  document.getElementById('price-val').textContent = 'Up to ₹' + v;
+  if (desktopRange) { desktopRange.value = v; document.getElementById('price-val').textContent = 'Up to ₹' + v; }
   applyAllFilters();
 }
 
@@ -299,40 +289,33 @@ function onMobPriceRange(v) {
 // =============================================
 function buildFilters() {
   const cats = ['All','Lipstick','Skincare','Eye','Nail','Perfume','Other'];
-  const catEl = document.getElementById('cat-filters');
-  catEl.innerHTML = cats.map(c => {
-    const cnt = c === 'All' ? products.length : products.filter(p => p.cat === c).length;
-    if (cnt === 0 && c !== 'All') return '';
-    return `<label class="chk-item">
-      <input type="checkbox" value="${c}" ${c==='All'?'checked':''} onchange="onCatCheck(this)">
-      <label>${c} <span class="chk-count">${cnt}</span></label></label>`;
-  }).join('');
+
+  function catHtml(forId) {
+    return cats.map(c => {
+      const cnt = c === 'All' ? products.length : products.filter(p => p.cat === c).length;
+      if (cnt === 0 && c !== 'All') return '';
+      return `<label class="chk-item">
+        <input type="checkbox" value="${c}" ${c==='All'?'checked':''} onchange="onCatCheck(this)">
+        <label>${c} <span class="chk-count">${cnt}</span></label>
+      </label>`;
+    }).join('');
+  }
+
+  document.getElementById('cat-filters').innerHTML     = catHtml('cat-filters');
+  document.getElementById('mob-cat-filters').innerHTML = catHtml('mob-cat-filters');
 
   const allBrands = [...new Set(products.map(p => p.brand))];
-  const brandEl = document.getElementById('brand-filters');
-  brandEl.innerHTML = allBrands.map(b => {
-    const cnt = products.filter(p => p.brand === b).length;
-    return `<label class="chk-item">
-      <input type="checkbox" value="${b}" onchange="onBrandCheck(this)">
-      <label>${b} <span class="chk-count">${cnt}</span></label></label>`;
-  }).join('');
-
-  const mobCatEl = document.getElementById('mob-cat-filters');
-  mobCatEl.innerHTML = cats.map(c => {
-    const cnt = c === 'All' ? products.length : products.filter(p => p.cat === c).length;
-    if (cnt === 0 && c !== 'All') return '';
-    return `<label class="chk-item">
-      <input type="checkbox" value="${c}" ${c==='All'?'checked':''} onchange="onCatCheck(this)">
-      <label>${c} <span class="chk-count">${cnt}</span></label></label>`;
-  }).join('');
-
-  const mobBrandEl = document.getElementById('mob-brand-filters');
-  mobBrandEl.innerHTML = allBrands.map(b => {
-    const cnt = products.filter(p => p.brand === b).length;
-    return `<label class="chk-item">
-      <input type="checkbox" value="${b}" onchange="onBrandCheck(this)">
-      <label>${b} <span class="chk-count">${cnt}</span></label></label>`;
-  }).join('');
+  function brandHtml() {
+    return allBrands.map(b => {
+      const cnt = products.filter(p => p.brand === b).length;
+      return `<label class="chk-item">
+        <input type="checkbox" value="${b}" onchange="onBrandCheck(this)">
+        <label>${b} <span class="chk-count">${cnt}</span></label>
+      </label>`;
+    }).join('');
+  }
+  document.getElementById('brand-filters').innerHTML     = brandHtml();
+  document.getElementById('mob-brand-filters').innerHTML = brandHtml();
 }
 
 function onCatCheck(el) {
@@ -341,23 +324,27 @@ function onCatCheck(el) {
     state.cat = 'All';
   } else {
     state.cat = el.value;
+    document.querySelectorAll('#cat-filters input, #mob-cat-filters input').forEach(i => {
+      if (i.value === 'All') i.checked = false;
+      if (i.value === el.value) i.checked = el.checked;
+    });
   }
   document.querySelectorAll('.chip').forEach(c => {
     const t = c.textContent.trim().replace(/^[^\w]+/,'').trim();
-    c.classList.toggle('on', el.value === 'All' ? t === 'All' : t === el.value || t.includes(el.value));
+    c.classList.toggle('on', (state.cat === 'All' && t === 'All') || t === state.cat || c.textContent.includes(state.cat));
   });
   applyAllFilters();
 }
 function onBrandCheck(el) {
-  el.checked ? state.brands.push(el.value) : (state.brands = state.brands.filter(b => b !== el.value));
+  if (el.checked) { state.brands.push(el.value); }
+  else            { state.brands = state.brands.filter(b => b !== el.value); }
   applyAllFilters();
 }
 function onPriceRange(v) {
   state.maxPrice = parseInt(v);
   document.getElementById('price-val').textContent = 'Up to ₹' + v;
   const mobRange = document.getElementById('mob-price-range');
-  if (mobRange) mobRange.value = v;
-  document.getElementById('mob-price-val').textContent = 'Up to ₹' + v;
+  if (mobRange) { mobRange.value = v; document.getElementById('mob-price-val').textContent = 'Up to ₹' + v; }
   applyAllFilters();
 }
 function setRating(r, el) {
@@ -369,11 +356,13 @@ function setRating(r, el) {
 function setChip(cat, el) {
   state.cat = cat;
   document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
-  if (el) el.classList.add('on');
-  else document.querySelectorAll('.chip').forEach(c => {
-    const t = c.textContent.trim();
-    if (t === cat || (cat === 'All' && t === 'All')) c.classList.add('on');
-  });
+  if (el) { el.classList.add('on'); }
+  else {
+    document.querySelectorAll('.chip').forEach(c => {
+      const t = c.textContent.trim();
+      if ((cat === 'All' && t === 'All') || c.textContent.includes(cat)) c.classList.add('on');
+    });
+  }
   applyAllFilters();
 }
 function clearAllFilters() {
@@ -384,7 +373,7 @@ function clearAllFilters() {
   document.getElementById('mob-price-val').textContent = 'Up to ₹5000';
   document.querySelectorAll('#cat-filters input, #brand-filters input, #mob-cat-filters input, #mob-brand-filters input').forEach(i => i.checked = false);
   document.querySelectorAll('#disc-filters input, #mob-disc-filters input').forEach(i => i.checked = false);
-  document.querySelectorAll('.star-opt').forEach((s, i) => s.classList.toggle('on', i === 0));
+  document.querySelectorAll('.star-opt').forEach((s,i) => s.classList.toggle('on', i === 0));
   document.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c.textContent.trim() === 'All'));
   applyAllFilters();
 }
@@ -401,11 +390,13 @@ function onMobSearch() {
   applyAllFilters();
 }
 function showSuggestions() {
-  const q = document.getElementById('search-inp').value.toLowerCase().trim();
+  const q   = document.getElementById('search-inp').value.toLowerCase().trim();
   const sug = document.getElementById('search-suggestions');
   if (!q) { sug.classList.remove('open'); return; }
   const matches = products.filter(p =>
-    p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q) || p.cat.toLowerCase().includes(q)
+    p.name.toLowerCase().includes(q) ||
+    p.brand.toLowerCase().includes(q) ||
+    p.cat.toLowerCase().includes(q)
   ).slice(0, 6);
   if (!matches.length) { sug.classList.remove('open'); return; }
   sug.innerHTML = matches.map(p => {
@@ -438,22 +429,22 @@ function applyAllFilters() {
   state.minDisc = discChecks.length ? Math.min(...discChecks) : 0;
 
   let list = [...products];
-  if (state.cat !== 'All') list = list.filter(p => p.cat === state.cat);
-  if (state.brands.length) list = list.filter(p => state.brands.includes(p.brand));
+  if (state.cat !== 'All')  list = list.filter(p => p.cat === state.cat);
+  if (state.brands.length)  list = list.filter(p => state.brands.includes(p.brand));
   list = list.filter(p => p.price <= state.maxPrice);
-  if (state.minRating > 0) list = list.filter(p => p.rating >= state.minRating);
-  if (state.minDisc > 0) list = list.filter(p => disc(p) >= state.minDisc);
-  if (state.search) list = list.filter(p =>
+  if (state.minRating > 0)  list = list.filter(p => p.rating >= state.minRating);
+  if (state.minDisc > 0)    list = list.filter(p => disc(p) >= state.minDisc);
+  if (state.search)         list = list.filter(p =>
     p.name.toLowerCase().includes(state.search) ||
     p.brand.toLowerCase().includes(state.search) ||
     p.cat.toLowerCase().includes(state.search)
   );
 
-  if (sort === 'price-low') list.sort((a,b) => a.price - b.price);
+  if (sort === 'price-low')  list.sort((a,b) => a.price - b.price);
   else if (sort === 'price-high') list.sort((a,b) => b.price - a.price);
-  else if (sort === 'rating') list.sort((a,b) => b.rating - a.rating);
-  else if (sort === 'discount') list.sort((a,b) => disc(b) - disc(a));
-  else if (sort === 'name') list.sort((a,b) => a.name.localeCompare(b.name));
+  else if (sort === 'rating')     list.sort((a,b) => b.rating - a.rating);
+  else if (sort === 'discount')   list.sort((a,b) => disc(b) - disc(a));
+  else if (sort === 'name')       list.sort((a,b) => a.name.localeCompare(b.name));
 
   renderGrid(list);
   document.getElementById('results-info').innerHTML = `<strong>${list.length}</strong> product${list.length !== 1 ? 's' : ''}`;
@@ -467,13 +458,13 @@ function renderGrid(list) {
     return;
   }
   grid.innerHTML = list.map(p => {
-    const w = wishlist.includes(p.id);
-    const d = disc(p);
+    const w       = wishlist.includes(p.id);
+    const d       = disc(p);
     const isOwner = p.userAdded && currentUser && !currentUser.isGuest &&
-      (p.ownerUid === currentUser.uid || (!p.ownerUid));
-    const delBtn = isOwner
-      ? `<button class="btn-del" onclick="event.stopPropagation();openDelModal(${p.id},'${p.name.replace(/'/g,"\\'")}')">🗑️</button>` : '';
-
+      (p.ownerUid === currentUser.uid || !p.ownerUid);
+    const delBtn  = isOwner
+      ? `<button class="btn-del" onclick="event.stopPropagation();openDelModal(${p.id},'${p.name.replace(/'/g,"\\'")}')">🗑️</button>`
+      : '';
     return `<div class="pcard" id="pc-${p.id}">
       <div class="pimg-wrap">
         ${prodImgHtml(p)}
@@ -490,8 +481,8 @@ function renderGrid(list) {
         </div>
         <div class="pprice"><span class="pcurr">₹${p.price}</span><span class="porig">₹${p.original}</span></div>
         <div class="pcard-btns">
-          <button class="btn-cart" onclick="addCart(${p.id})">🛒 Cart</button>
-          <button class="btn-buy" onclick="buyNow(${p.id})">Buy Now</button>
+          <button class="btn-cart" onclick="event.stopPropagation();addCart(${p.id})">🛒 Cart</button>
+          <button class="btn-buy"  onclick="event.stopPropagation();buyNow(${p.id})">Buy Now</button>
           ${delBtn}
         </div>
       </div>
@@ -542,7 +533,8 @@ function addCart(id) {
   renderCart();
 }
 function toggleWish(id) {
-  wishlist.includes(id) ? wishlist = wishlist.filter(x => x !== id) : wishlist.push(id);
+  if (wishlist.includes(id)) { wishlist = wishlist.filter(x => x !== id); }
+  else                       { wishlist.push(id); }
   const on = wishlist.includes(id);
   document.querySelectorAll(`#pc-${id} .pwish`).forEach(b => {
     b.textContent = on ? '❤️' : '🤍';
@@ -575,35 +567,40 @@ function renderCart() {
   if (!el) return;
   if (!cart.length) {
     el.innerHTML = `<div class="cart-empty">
-      <div class="ei">🛒</div><h2>Cart is empty!</h2>
+      <div class="ei">🛒</div>
+      <h2>Cart is empty!</h2>
       <p>Go explore our amazing products.</p>
-      <button class="btn-next" style="max-width:200px" onclick="go('shop')">Shop Now 💄</button>
+      <button class="btn-next" style="max-width:200px;margin:0 auto;display:block" onclick="go('shop')">Shop Now 💄</button>
     </div>`;
     return;
   }
-  const sub = cart.reduce((s,i) => s + i.price * i.qty, 0);
-  const ship = sub >= 999 ? 0 : 99;
+  const sub   = cart.reduce((s,i) => s + i.price * i.qty, 0);
+  const ship  = sub >= 999 ? 0 : 99;
   const total = sub + ship;
   el.innerHTML = `<div class="cart-layout">
-    <div class="cart-list">${cart.map(i => `<div class="citem">
-      <div class="cimg">${cartImgHtml(i)}</div>
-      <div class="cdetails">
-        <h3>${i.name}</h3>
-        <div class="cvar">${i.brand} · ${i.cat}</div>
-        <div class="cprice">₹${i.price}</div>
-      </div>
-      <div class="cqty">
-        <button class="qbtn" onclick="changeQty(${i.id},-1)">−</button>
-        <span class="qnum">${i.qty}</span>
-        <button class="qbtn" onclick="changeQty(${i.id},1)">+</button>
-      </div>
-      <button class="cremove" onclick="removeCart(${i.id})">🗑️</button>
-    </div>`).join('')}</div>
+    <div class="cart-list">${cart.map(i => `
+      <div class="citem">
+        <div class="cimg">${cartImgHtml(i)}</div>
+        <div class="cdetails">
+          <h3>${i.name}</h3>
+          <div class="cvar">${i.brand} · ${i.cat}</div>
+          <div class="cprice">₹${i.price}</div>
+        </div>
+        <div class="cqty">
+          <button class="qbtn" onclick="changeQty(${i.id},-1)">−</button>
+          <span class="qnum">${i.qty}</span>
+          <button class="qbtn" onclick="changeQty(${i.id},1)">+</button>
+        </div>
+        <button class="cremove" onclick="removeCart(${i.id})">🗑️</button>
+      </div>`).join('')}</div>
     <div class="csummary">
       <h3>Order Summary</h3>
       <div class="srow"><span>Subtotal (${cart.reduce((s,i)=>s+i.qty,0)} items)</span><span>₹${sub}</span></div>
       <div class="srow"><span>Shipping</span><span>${ship===0?'<span style="color:#16a34a;font-weight:700">FREE</span>':'₹'+ship}</span></div>
-      <div class="coupon"><input placeholder="Coupon code"><button class="cbtn" onclick="showToast('🎉 Coupon applied!')">Apply</button></div>
+      <div class="coupon">
+        <input placeholder="Coupon code">
+        <button class="cbtn" onclick="showToast('🎉 Coupon applied!')">Apply</button>
+      </div>
       <div class="srow total"><span>Total</span><span class="amt">₹${total}</span></div>
       ${sub < 999 ? `<p style="font-size:11px;color:var(--muted);margin-top:5px;text-align:center">Add ₹${999-sub} more for free shipping</p>` : ''}
       <button class="btn-checkout" onclick="openCheckout(null)">Proceed to Checkout →</button>
@@ -623,6 +620,10 @@ function buyNow(id) {
 function openCheckout(item) {
   buyNowItem = item; checkoutStep = 1;
   selectedAddr = 's1'; selectedPay = 'upi';
+  // Reset step-indicator display
+  const si = document.getElementById('step-indicator');
+  if (si) si.style.display = '';
+  document.getElementById('modal-foot').style.display = '';
   document.getElementById('checkout-modal').classList.add('open');
   document.body.style.overflow = 'hidden';
   updateModal();
@@ -633,7 +634,9 @@ function closeModal() {
 }
 function updateModal() {
   ['step-1','step-2','step-3','step-success'].forEach(s => document.getElementById(s).classList.remove('active'));
-  document.getElementById('step-' + checkoutStep)?.classList.add('active');
+  const stepEl = document.getElementById('step-' + checkoutStep);
+  if (stepEl) stepEl.classList.add('active');
+
   for (let i = 1; i <= 3; i++) {
     const si = document.getElementById('si-' + i);
     if (!si) continue;
@@ -641,11 +644,12 @@ function updateModal() {
     if (i < checkoutStep) si.classList.add('done');
     if (i === checkoutStep) si.classList.add('active');
   }
+
   const titles = {1:'📍 Delivery Address',2:'💳 Payment Method',3:'📦 Review Order'};
-  document.getElementById('modal-title').textContent = titles[checkoutStep] || 'Order Confirmed';
-  document.getElementById('btn-back').style.visibility = checkoutStep === 1 ? 'hidden' : '';
-  document.getElementById('modal-foot').style.display = checkoutStep >= 4 ? 'none' : '';
-  document.getElementById('btn-next').textContent = checkoutStep === 3 ? '✅ Place Order' : 'Continue →';
+  document.getElementById('modal-title').textContent = titles[checkoutStep] || '✅ Order Confirmed!';
+  document.getElementById('btn-back').style.visibility = checkoutStep === 1 ? 'hidden' : 'visible';
+  document.getElementById('modal-foot').style.display  = checkoutStep >= 4 ? 'none' : '';
+  document.getElementById('btn-next').textContent      = checkoutStep === 3 ? '✅ Place Order' : 'Continue →';
 }
 function selectAddr(v) {
   selectedAddr = v;
@@ -656,28 +660,44 @@ function modalNext() {
   if (checkoutStep === 2) buildReview();
   checkoutStep++; updateModal();
 }
-function modalBack() { if (checkoutStep > 1) { checkoutStep--; updateModal(); } }
+function modalBack() {
+  if (checkoutStep > 1) { checkoutStep--; updateModal(); }
+}
 
 function buildReview() {
   const addrMap = {
     s1: '12/3 Rose Street, T. Nagar, Chennai - 600017, Tamil Nadu',
     s2: '45 Park Avenue, Anna Nagar, Chennai - 600040, Tamil Nadu'
   };
-  const addrCustom = document.getElementById('addr-name').value;
-  const finalAddr = addrCustom
-    ? `${addrCustom}\n${document.getElementById('addr-line1').value}, ${document.getElementById('addr-line2').value}\n${document.getElementById('addr-city').value} - ${document.getElementById('addr-pin').value}, ${document.getElementById('addr-state').value}`
-    : addrMap[selectedAddr];
+  const addrName = (document.getElementById('addr-name').value || '').trim();
+  let finalAddr;
+  if (addrName) {
+    const line1  = document.getElementById('addr-line1').value || '';
+    const line2  = document.getElementById('addr-line2').value || '';
+    const city   = document.getElementById('addr-city').value  || '';
+    const pin    = document.getElementById('addr-pin').value   || '';
+    const state_ = document.getElementById('addr-state').value || '';
+    finalAddr = `${addrName}\n${line1}, ${line2}\n${city} - ${pin}, ${state_}`;
+  } else {
+    finalAddr = addrMap[selectedAddr] || addrMap.s1;
+  }
   document.getElementById('review-addr').innerHTML = `<strong>Delivery To:</strong>${finalAddr.split('\n').join('<br>')}`;
+
   const items = buyNowItem ? [{...buyNowItem, qty:1}] : cart;
   document.getElementById('review-items').innerHTML = items.map(i => {
     const imgHtml = i.dataUrl
       ? `<img src="${i.dataUrl}" onerror="this.style.display='none'">`
       : `<svg viewBox="0 0 24 24" fill="none" style="width:22px;height:22px"><path d="M3 16l5-5 4 4 3-3 4 4" stroke="#c01a54" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="2" y="3" width="20" height="18" rx="2" stroke="#c01a54" stroke-width="1.5"/></svg>`;
-    return `<div class="oi"><div class="oi-img">${imgHtml}</div><div class="oi-name">${i.name} × ${i.qty}</div><div class="oi-price">₹${i.price*i.qty}</div></div>`;
+    return `<div class="oi">
+      <div class="oi-img">${imgHtml}</div>
+      <div class="oi-name">${i.name} × ${i.qty}</div>
+      <div class="oi-price">₹${i.price * i.qty}</div>
+    </div>`;
   }).join('');
-  const sub = items.reduce((s,i) => s + i.price * i.qty, 0);
+
+  const sub  = items.reduce((s,i) => s + i.price * i.qty, 0);
   const ship = sub >= 999 ? 0 : 99;
-  const payLabels = {upi:'UPI',card:'Card',netbank:'Net Banking',cod:'Cash on Delivery'};
+  const payLabels = {upi:'UPI', card:'Card', netbank:'Net Banking', cod:'Cash on Delivery'};
   document.getElementById('review-total').innerHTML = `
     <div class="review-row"><span>Subtotal</span><span>₹${sub}</span></div>
     <div class="review-row"><span>Shipping</span><span>${ship===0?'FREE':'₹'+ship}</span></div>
@@ -691,22 +711,25 @@ function placeOrder() {
   checkoutStep = 4;
   ['step-1','step-2','step-3'].forEach(s => document.getElementById(s).classList.remove('active'));
   document.getElementById('step-success').classList.add('active');
-  document.getElementById('step-indicator').style.display = 'none';
+  const si = document.getElementById('step-indicator');
+  if (si) si.style.display = 'none';
   document.getElementById('modal-foot').style.display = 'none';
-  document.getElementById('modal-title').textContent = '✅ Order Confirmed!';
+  document.getElementById('modal-title').textContent  = '✅ Order Confirmed!';
   if (!buyNowItem) { cart = []; updateCartCount(); renderCart(); }
   buyNowItem = null;
 }
+
 function selPay(val, el) {
   selectedPay = val;
   document.querySelectorAll('.pay-opt').forEach(o => o.classList.remove('selected'));
   el.classList.add('selected');
-  document.getElementById('upi-section').style.display = val === 'upi' ? '' : 'none';
+  document.getElementById('upi-section').style.display  = val === 'upi'  ? '' : 'none';
   document.getElementById('card-section').style.display = val === 'card' ? '' : 'none';
 }
 function selUpiApp(app) {
   document.querySelectorAll('.upi-app').forEach(a => a.classList.remove('sel'));
-  document.getElementById('upi-' + app)?.classList.add('sel');
+  const el = document.getElementById('upi-' + app);
+  if (el) el.classList.add('sel');
 }
 
 // =============================================
@@ -723,15 +746,16 @@ function closeAddProduct() {
 }
 function resetAddForm() {
   ['prod-name','prod-brand','prod-price','prod-original','prod-rating'].forEach(id => {
-    document.getElementById(id).value = '';
+    const el = document.getElementById(id);
+    if (el) el.value = '';
   });
-  document.getElementById('prod-cat').value = '';
+  document.getElementById('prod-cat').value   = '';
   document.getElementById('prod-badge').value = 'New';
   document.getElementById('img-required-note').classList.remove('show');
   resetImageUpload();
 }
 function resetImageUpload() {
-  document.getElementById('upload-hint').style.display = 'block';
+  document.getElementById('upload-hint').style.display  = 'block';
   document.getElementById('img-preview-el').style.display = 'none';
   document.getElementById('crop-toolbar').classList.remove('show');
   document.getElementById('crop-container').classList.remove('show');
@@ -749,19 +773,19 @@ function onImageSelected(e) {
   reader.readAsDataURL(file);
 }
 function initCrop(dataUrl) {
-  document.getElementById('upload-hint').style.display = 'none';
+  document.getElementById('upload-hint').style.display    = 'none';
   document.getElementById('img-preview-el').style.display = 'none';
   document.getElementById('crop-toolbar').classList.add('show');
   document.getElementById('crop-container').classList.add('show');
   document.getElementById('crop-confirm-row').style.display = 'flex';
-  const canvas = document.getElementById('crop-canvas');
+  const canvas    = document.getElementById('crop-canvas');
   const container = document.getElementById('crop-container');
   const img = new Image();
   img.onload = function() {
     cropImg = img;
-    const maxW = container.clientWidth || 460;
-    canvasScale = Math.min(1, maxW / img.width);
-    canvas.width = img.width * canvasScale;
+    const maxW   = container.clientWidth || 460;
+    canvasScale  = Math.min(1, maxW / img.width);
+    canvas.width  = img.width  * canvasScale;
     canvas.height = img.height * canvasScale;
     canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
     const size = Math.min(canvas.width, canvas.height) * 0.8;
@@ -781,7 +805,8 @@ function setCropRatio(w, h, btn) {
     let bw = maxW, bh = maxW * (h/w);
     if (bh > maxH) { bh = maxH; bw = maxH * (w/h); }
     cropBox.w = bw; cropBox.h = bh;
-    cropBox.x = (canvas.width - bw) / 2; cropBox.y = (canvas.height - bh) / 2;
+    cropBox.x = (canvas.width - bw) / 2;
+    cropBox.y = (canvas.height - bh) / 2;
     updateCropBox();
   }
 }
@@ -795,49 +820,94 @@ function enforceCropRatio() {
   }
 }
 function updateCropBox() {
-  const box = document.getElementById('crop-box');
-  const canvas = document.getElementById('crop-canvas');
+  const box     = document.getElementById('crop-box');
+  const canvas  = document.getElementById('crop-canvas');
   const overlay = document.getElementById('crop-overlay');
-  overlay.style.width = canvas.width + 'px'; overlay.style.height = canvas.height + 'px';
-  box.style.left = cropBox.x + 'px'; box.style.top = cropBox.y + 'px';
-  box.style.width = cropBox.w + 'px'; box.style.height = cropBox.h + 'px';
+  overlay.style.width  = canvas.width  + 'px';
+  overlay.style.height = canvas.height + 'px';
+  box.style.left   = cropBox.x + 'px';
+  box.style.top    = cropBox.y + 'px';
+  box.style.width  = cropBox.w + 'px';
+  box.style.height = cropBox.h + 'px';
 }
 
-const cropBoxEl = document.getElementById('crop-box');
-cropBoxEl.addEventListener('mousedown', e => { if (e.target.classList.contains('crop-handle')) return; isDragging=true; isResizing=false; dragStart={x:e.clientX,y:e.clientY}; dragBoxStart={...cropBox}; e.preventDefault(); });
-cropBoxEl.addEventListener('touchstart', e => { if (e.target.classList.contains('crop-handle')) return; isDragging=true; isResizing=false; const t=e.touches[0]; dragStart={x:t.clientX,y:t.clientY}; dragBoxStart={...cropBox}; e.preventDefault(); }, {passive:false});
-document.querySelectorAll('.crop-handle').forEach(h => {
-  h.addEventListener('mousedown', e => { isResizing=true; isDragging=false; activeHandle=e.target.dataset.h; dragStart={x:e.clientX,y:e.clientY}; dragBoxStart={...cropBox}; e.preventDefault(); e.stopPropagation(); });
-  h.addEventListener('touchstart', e => { isResizing=true; isDragging=false; activeHandle=e.target.dataset.h; const t=e.touches[0]; dragStart={x:t.clientX,y:t.clientY}; dragBoxStart={...cropBox}; e.preventDefault(); e.stopPropagation(); }, {passive:false});
-});
-document.addEventListener('mousemove', e => { if (!isDragging && !isResizing) return; handleCropMove(e.clientX-dragStart.x, e.clientY-dragStart.y); });
-document.addEventListener('touchmove', e => { if (!isDragging && !isResizing) return; const t=e.touches[0]; handleCropMove(t.clientX-dragStart.x, t.clientY-dragStart.y); e.preventDefault(); }, {passive:false});
-document.addEventListener('mouseup', () => { isDragging=false; isResizing=false; activeHandle=null; });
-document.addEventListener('touchend', () => { isDragging=false; isResizing=false; activeHandle=null; });
+// Crop drag / resize events (set up after DOM ready)
+function initCropEvents() {
+  const cropBoxEl = document.getElementById('crop-box');
+  if (!cropBoxEl) return;
+
+  cropBoxEl.addEventListener('mousedown', e => {
+    if (e.target.classList.contains('crop-handle')) return;
+    isDragging = true; isResizing = false;
+    dragStart = {x:e.clientX, y:e.clientY}; dragBoxStart = {...cropBox};
+    e.preventDefault();
+  });
+  cropBoxEl.addEventListener('touchstart', e => {
+    if (e.target.classList.contains('crop-handle')) return;
+    isDragging = true; isResizing = false;
+    const t = e.touches[0];
+    dragStart = {x:t.clientX, y:t.clientY}; dragBoxStart = {...cropBox};
+    e.preventDefault();
+  }, {passive:false});
+
+  document.querySelectorAll('.crop-handle').forEach(h => {
+    h.addEventListener('mousedown', e => {
+      isResizing = true; isDragging = false;
+      activeHandle = e.target.dataset.h;
+      dragStart = {x:e.clientX, y:e.clientY}; dragBoxStart = {...cropBox};
+      e.preventDefault(); e.stopPropagation();
+    });
+    h.addEventListener('touchstart', e => {
+      isResizing = true; isDragging = false;
+      activeHandle = e.target.dataset.h;
+      const t = e.touches[0];
+      dragStart = {x:t.clientX, y:t.clientY}; dragBoxStart = {...cropBox};
+      e.preventDefault(); e.stopPropagation();
+    }, {passive:false});
+  });
+
+  document.addEventListener('mousemove', e => {
+    if (!isDragging && !isResizing) return;
+    handleCropMove(e.clientX - dragStart.x, e.clientY - dragStart.y);
+  });
+  document.addEventListener('touchmove', e => {
+    if (!isDragging && !isResizing) return;
+    const t = e.touches[0];
+    handleCropMove(t.clientX - dragStart.x, t.clientY - dragStart.y);
+    e.preventDefault();
+  }, {passive:false});
+  document.addEventListener('mouseup',  () => { isDragging = false; isResizing = false; activeHandle = null; });
+  document.addEventListener('touchend', () => { isDragging = false; isResizing = false; activeHandle = null; });
+}
 
 function handleCropMove(dx, dy) {
   const canvas = document.getElementById('crop-canvas');
   if (isDragging) {
-    cropBox.x = Math.max(0, Math.min(canvas.width-cropBox.w, dragBoxStart.x+dx));
-    cropBox.y = Math.max(0, Math.min(canvas.height-cropBox.h, dragBoxStart.y+dy));
+    cropBox.x = Math.max(0, Math.min(canvas.width  - cropBox.w, dragBoxStart.x + dx));
+    cropBox.y = Math.max(0, Math.min(canvas.height - cropBox.h, dragBoxStart.y + dy));
   } else if (isResizing) {
-    let {x,y,w,h} = dragBoxStart; const minS = 30;
-    const aspect = cropRatio.w && cropRatio.h ? cropRatio.h/cropRatio.w : null;
+    let {x,y,w,h} = dragBoxStart;
+    const minS   = 30;
+    const aspect = (cropRatio.w && cropRatio.h) ? cropRatio.h / cropRatio.w : null;
     if (activeHandle === 'br') { w=Math.max(minS,w+dx); h=aspect?w*aspect:Math.max(minS,h+dy); }
     else if (activeHandle === 'bl') { w=Math.max(minS,w-dx); x=dragBoxStart.x+dragBoxStart.w-w; h=aspect?w*aspect:Math.max(minS,h+dy); }
     else if (activeHandle === 'tr') { w=Math.max(minS,w+dx); h=aspect?w*aspect:Math.max(minS,h-dy); y=dragBoxStart.y+dragBoxStart.h-h; }
     else if (activeHandle === 'tl') { w=Math.max(minS,w-dx); h=aspect?w*aspect:Math.max(minS,h-dy); x=dragBoxStart.x+dragBoxStart.w-w; y=dragBoxStart.y+dragBoxStart.h-h; }
-    w=Math.min(w,canvas.width-x); h=Math.min(h,canvas.height-y); x=Math.max(0,x); y=Math.max(0,y);
-    cropBox = {x,y,w,h};
+    w = Math.min(w, canvas.width  - x);
+    h = Math.min(h, canvas.height - y);
+    x = Math.max(0, x); y = Math.max(0, y);
+    cropBox = {x, y, w, h};
   }
   updateCropBox();
 }
+
 function applyCrop() {
   if (!cropImg) { showToast('⚠️ No image to crop'); return; }
-  const off = document.createElement('canvas');
-  const sx = cropImg.width / document.getElementById('crop-canvas').width;
-  const sy = cropImg.height / document.getElementById('crop-canvas').height;
-  off.width = cropBox.w * sx; off.height = cropBox.h * sy;
+  const off  = document.createElement('canvas');
+  const sx   = cropImg.width  / document.getElementById('crop-canvas').width;
+  const sy   = cropImg.height / document.getElementById('crop-canvas').height;
+  off.width  = cropBox.w * sx;
+  off.height = cropBox.h * sy;
   off.getContext('2d').drawImage(cropImg, cropBox.x*sx, cropBox.y*sy, off.width, off.height, 0, 0, off.width, off.height);
   cropFinalDataUrl = off.toDataURL('image/jpeg', 0.9);
   document.getElementById('crop-container').classList.remove('show');
@@ -851,37 +921,36 @@ function applyCrop() {
 function resetCrop() { initCrop(cropRawDataUrl); }
 
 function saveProduct() {
-  const name = document.getElementById('prod-name').value.trim();
-  const brand = document.getElementById('prod-brand').value.trim();
-  const cat = document.getElementById('prod-cat').value;
-  const price = parseInt(document.getElementById('prod-price').value);
+  const name     = document.getElementById('prod-name').value.trim();
+  const brand    = document.getElementById('prod-brand').value.trim();
+  const cat      = document.getElementById('prod-cat').value;
+  const price    = parseInt(document.getElementById('prod-price').value);
   const original = parseInt(document.getElementById('prod-original').value);
-  const rating = parseFloat(document.getElementById('prod-rating').value) || 4.5;
-  const badge = document.getElementById('prod-badge').value;
+  const rating   = parseFloat(document.getElementById('prod-rating').value) || 4.5;
+  const badge    = document.getElementById('prod-badge').value;
+  const dataUrl  = cropFinalDataUrl || cropRawDataUrl || null;
 
-  const dataUrl = cropFinalDataUrl || cropRawDataUrl || null;
   if (!dataUrl) {
     document.getElementById('img-required-note').classList.add('show');
     showToast('⚠️ Product image upload பண்ணுங்க');
     document.getElementById('upload-area').scrollIntoView({behavior:'smooth',block:'center'});
     return;
   }
-  if (!name) { showToast('⚠️ Product name required'); return; }
-  if (!brand) { showToast('⚠️ Brand name required'); return; }
-  if (!cat) { showToast('⚠️ Category select பண்ணுங்க'); return; }
-  if (!price || price < 1) { showToast('⚠️ Valid selling price required'); return; }
-  if (!original || original < 1) { showToast('⚠️ Valid original price required'); return; }
-  if (price >= original) { showToast('⚠️ Selling price must be less than original price'); return; }
+  if (!name)                        { showToast('⚠️ Product name required'); return; }
+  if (!brand)                       { showToast('⚠️ Brand name required'); return; }
+  if (!cat)                         { showToast('⚠️ Category select பண்ணுங்க'); return; }
+  if (!price || price < 1)          { showToast('⚠️ Valid selling price required'); return; }
+  if (!original || original < 1)    { showToast('⚠️ Valid original price required'); return; }
+  if (price >= original)            { showToast('⚠️ Selling price must be less than original price'); return; }
 
   const id = nextId++;
   const newProd = {
     id, name, brand, cat, dataUrl,
     price, original,
     rating: Math.min(5, Math.max(0, rating)),
-    reviews: '0', badge, userAdded: true,
+    reviews:'0', badge, userAdded:true,
     ownerUid: currentUser?.uid || null
   };
-
   userProducts.push(newProd);
   saveUserProductsLocal(userProducts);
   rebuildProducts(); buildFilters(); applyAllFilters(); renderHorizontalSections();
@@ -893,6 +962,9 @@ function saveProduct() {
   }, 400);
 }
 
+// =============================================
+//  MISC
+// =============================================
 function toggleFaq(item) {
   item.classList.toggle('open');
   item.querySelector('.faq-a').classList.toggle('open');
@@ -903,22 +975,23 @@ function toggleFaq(item) {
 // =============================================
 function go(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
+  const target = document.getElementById('page-' + page);
+  if (target) target.classList.add('active');
   window.scrollTo(0, 0);
   if (page === 'cart') renderCart();
+  closeMob();
 }
 function toggleMob() { document.getElementById('mobNav').classList.toggle('open'); }
-function closeMob() { document.getElementById('mobNav').classList.remove('open'); }
+function closeMob()  { document.getElementById('mobNav').classList.remove('open'); }
 
+// Close modals on backdrop click
 document.getElementById('checkout-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
 document.getElementById('add-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeAddProduct(); });
 document.getElementById('del-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeDelModal(); });
 
+// ESC key
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    closeModal(); closeAddProduct(); closeDelModal();
-    closeMob(); closeFilterDrawer();
-  }
+  if (e.key === 'Escape') { closeModal(); closeAddProduct(); closeDelModal(); closeMob(); closeFilterDrawer(); }
 });
 
 // =============================================
@@ -929,3 +1002,4 @@ buildFilters();
 applyAllFilters();
 renderHorizontalSections();
 updateUserNav();
+initCropEvents();  // init crop drag events after DOM is ready

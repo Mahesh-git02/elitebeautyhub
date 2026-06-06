@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Elite Beauty Hub</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:opsz,wght@9..40,300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,17 +11,20 @@
 <!-- NAVBAR -->
 <nav class="navbar">
   <div class="nav-wrap">
+
+    <!-- LOGO — fixed: graceful fallback if logo.png missing -->
     <div class="logo" onclick="go('shop')">
-  <div class="logo-circle">
-    <img src="\images\logo.png" alt="Elite Beauty Hub Logo" class="logo-img">
-  </div>
+      <div class="logo-circle">
+        <img src="images/logo.png" alt="EBH" class="logo-img"
+          onerror="this.style.display='none';this.parentElement.innerHTML='<svg viewBox=\'0 0 40 40\' xmlns=\'http://www.w3.org/2000/svg\' style=\'width:24px;height:24px\'><rect x=\'12\' y=\'5\' width=\'16\' height=\'20\' rx=\'4\' fill=\'white\' opacity=\'.9\'/><rect x=\'14\' y=\'3\' width=\'12\' height=\'6\' rx=\'3\' fill=\'white\' opacity=\'.6\'/><ellipse cx=\'20\' cy=\'25\' rx=\'8\' ry=\'2.5\' fill=\'white\' opacity=\'.35\'/><rect x=\'13\' y=\'27\' width=\'14\' height=\'9\' rx=\'3\' fill=\'white\' opacity=\'.3\'/></svg>'">
+      </div>
+      <div class="logo-text">
+        <div class="logo-name">Elite Beauty Hub</div>
+        <div class="logo-tag">Premium Cosmetics</div>
+      </div>
+    </div>
 
-  <div class="logo-text">
-    <div class="logo-name">Elite Beauty Hub</div>
-    <div class="logo-tag">Premium Cosmetics</div>
-  </div>
-</div>
-
+    <!-- SEARCH (desktop only) -->
     <div class="search-wrap">
       <div class="search-bar">
         <input type="text" id="search-inp" placeholder="Search products, brands..."
@@ -39,14 +41,16 @@
       <button class="cart-pill" onclick="go('cart')">
         🛒 Cart <span class="cart-num" id="cart-count">0</span>
       </button>
-      <button class="ham" onclick="toggleMob()" id="ham">
+      <!-- hamburger -->
+      <button class="ham" onclick="toggleMob()" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
     </div>
+
   </div>
 </nav>
 
-<!-- MOBILE NAV -->
+<!-- MOBILE NAV DRAWER -->
 <div class="mob-nav" id="mobNav">
   <div class="mob-search">
     <input type="text" id="mob-search-inp" placeholder="Search products..."
@@ -75,7 +79,8 @@
     <div class="sb-section"><h4>Brand</h4><div id="mob-brand-filters"></div></div>
     <div class="sb-section">
       <h4>Price Range</h4>
-      <input type="range" class="price-range" id="mob-price-range" min="0" max="5000" value="5000" step="50" oninput="onMobPriceRange(this.value)">
+      <input type="range" class="price-range" id="mob-price-range" min="0" max="5000" value="5000" step="50"
+        oninput="onMobPriceRange(this.value)">
       <div class="price-labels"><span>₹0</span><span>₹5000</span></div>
       <div class="price-val" id="mob-price-val">Up to ₹5000</div>
     </div>
@@ -103,13 +108,16 @@
   </div>
 </div>
 
-<!-- ========== AUTH PAGE ========== -->
+<!-- ======================================================
+     AUTH PAGE
+     ====================================================== -->
 <div id="page-auth" class="page active">
   <div class="auth-page">
     <div class="auth-box">
       <div class="auth-logo">
         <div class="auth-logo-circle">
-          <img src="\images\logo.png" alt="Elite Beauty Hub Logo" class="logo-img">
+          <img src="images/logo.png" alt="EBH"
+            onerror="this.style.display='none';this.parentElement.innerHTML='<svg viewBox=\'0 0 40 40\' xmlns=\'http://www.w3.org/2000/svg\' style=\'width:30px;height:30px\'><rect x=\'12\' y=\'5\' width=\'16\' height=\'20\' rx=\'4\' fill=\'white\' opacity=\'.9\'/><rect x=\'14\' y=\'3\' width=\'12\' height=\'6\' rx=\'3\' fill=\'white\' opacity=\'.6\'/><ellipse cx=\'20\' cy=\'25\' rx=\'8\' ry=\'2.5\' fill=\'white\' opacity=\'.35\'/><rect x=\'13\' y=\'27\' width=\'14\' height=\'9\' rx=\'3\' fill=\'white\' opacity=\'.3\'/></svg>'">
         </div>
         <div class="auth-logo-text">
           <div class="auth-logo-name">Elite Beauty Hub</div>
@@ -124,15 +132,16 @@
           <button class="auth-tab" onclick="switchAuthTab('register',this)">Register</button>
         </div>
 
-        <!-- LOGIN FORM -->
+        <!-- LOGIN -->
         <div class="auth-form active" id="login-form">
           <div class="auth-fg">
             <label>Email</label>
-            <input type="email" id="login-email" placeholder="your@email.com">
+            <input type="email" id="login-email" placeholder="your@email.com" autocomplete="email">
           </div>
           <div class="auth-fg">
             <label>Password</label>
             <input type="password" id="login-password" placeholder="Enter your password"
+              autocomplete="current-password"
               onkeydown="if(event.key==='Enter')doLogin()">
           </div>
           <button class="btn-auth" onclick="doLogin()">Login 🔐</button>
@@ -140,19 +149,20 @@
           <button class="guest-btn" onclick="loginGuest()">👤 Guest User</button>
         </div>
 
-        <!-- REGISTER FORM -->
+        <!-- REGISTER -->
         <div class="auth-form" id="register-form">
           <div class="auth-fg">
             <label>Full Name</label>
-            <input type="text" id="reg-name" placeholder="Your full name">
+            <input type="text" id="reg-name" placeholder="Your full name" autocomplete="name">
           </div>
           <div class="auth-fg">
             <label>Email</label>
-            <input type="email" id="reg-email" placeholder="your@email.com">
+            <input type="email" id="reg-email" placeholder="your@email.com" autocomplete="email">
           </div>
           <div class="auth-fg">
             <label>Password</label>
-            <input type="password" id="reg-password" placeholder="Create a password"
+            <input type="password" id="reg-password" placeholder="Create a password (min 6 chars)"
+              autocomplete="new-password"
               onkeydown="if(event.key==='Enter')doRegister()">
           </div>
           <button class="btn-auth" onclick="doRegister()">Create Account ✅</button>
@@ -164,10 +174,12 @@
   </div>
 </div>
 
-<!-- SHOP PAGE -->
+<!-- ======================================================
+     SHOP PAGE
+     ====================================================== -->
 <div id="page-shop" class="page">
 
-  <!-- ====== HORIZONTAL SCROLL SECTIONS (shown above main shop) ====== -->
+  <!-- Horizontal scroll sections -->
   <div class="hscroll-sections">
 
     <!-- TRENDING NOW -->
@@ -180,9 +192,9 @@
         <button class="hscroll-see-all" onclick="setChip('All',null);applyAllFilters()">See All →</button>
       </div>
       <div class="hscroll-track-wrap">
-        <button class="hscroll-arrow hscroll-arrow-left" onclick="scrollHTrack('trending',-1)">‹</button>
+        <button class="hscroll-arrow" onclick="scrollHTrack('trending',-1)">&#8249;</button>
         <div class="hscroll-track" id="htrack-trending"></div>
-        <button class="hscroll-arrow hscroll-arrow-right" onclick="scrollHTrack('trending',1)">›</button>
+        <button class="hscroll-arrow" onclick="scrollHTrack('trending',1)">&#8250;</button>
       </div>
     </div>
 
@@ -193,12 +205,12 @@
           <div class="hscroll-title">🧴 Skincare Picks</div>
           <div class="hscroll-sub">Glow up your routine</div>
         </div>
-        <button class="hscroll-see-all" onclick="setChip('Skincare',document.querySelector('.chip:nth-child(3)'));go('shop')">See All →</button>
+        <button class="hscroll-see-all" onclick="setChip('Skincare',null);go('shop')">See All →</button>
       </div>
       <div class="hscroll-track-wrap">
-        <button class="hscroll-arrow hscroll-arrow-left" onclick="scrollHTrack('skincare',-1)">‹</button>
+        <button class="hscroll-arrow" onclick="scrollHTrack('skincare',-1)">&#8249;</button>
         <div class="hscroll-track" id="htrack-skincare"></div>
-        <button class="hscroll-arrow hscroll-arrow-right" onclick="scrollHTrack('skincare',1)">›</button>
+        <button class="hscroll-arrow" onclick="scrollHTrack('skincare',1)">&#8250;</button>
       </div>
     </div>
 
@@ -212,24 +224,27 @@
         <button class="hscroll-see-all" onclick="document.getElementById('sort-sel').value='rating';applyAllFilters()">See All →</button>
       </div>
       <div class="hscroll-track-wrap">
-        <button class="hscroll-arrow hscroll-arrow-left" onclick="scrollHTrack('bestseller',-1)">‹</button>
+        <button class="hscroll-arrow" onclick="scrollHTrack('bestseller',-1)">&#8249;</button>
         <div class="hscroll-track" id="htrack-bestseller"></div>
-        <button class="hscroll-arrow hscroll-arrow-right" onclick="scrollHTrack('bestseller',1)">›</button>
+        <button class="hscroll-arrow" onclick="scrollHTrack('bestseller',1)">&#8250;</button>
       </div>
     </div>
 
   </div>
-  <!-- ====== END HORIZONTAL SCROLL ====== -->
+  <!-- END HORIZONTAL SCROLL -->
 
   <div class="shop-page">
     <div class="shop-layout">
+
+      <!-- SIDEBAR (desktop) -->
       <aside class="sidebar">
         <div class="sb-title">Filters <span class="sb-clear" onclick="clearAllFilters()">Clear All</span></div>
         <div class="sb-section"><h4>Category</h4><div id="cat-filters"></div></div>
         <div class="sb-section"><h4>Brand</h4><div id="brand-filters"></div></div>
         <div class="sb-section">
           <h4>Price Range</h4>
-          <input type="range" class="price-range" id="price-range" min="0" max="5000" value="5000" step="50" oninput="onPriceRange(this.value)">
+          <input type="range" class="price-range" id="price-range" min="0" max="5000" value="5000" step="50"
+            oninput="onPriceRange(this.value)">
           <div class="price-labels"><span>₹0</span><span>₹5000</span></div>
           <div class="price-val" id="price-val">Up to ₹5000</div>
         </div>
@@ -252,16 +267,17 @@
         </div>
       </aside>
 
+      <!-- MAIN SHOP AREA -->
       <div class="shop-main">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
           <button class="mob-filter-btn" onclick="openFilterDrawer()">🔧 Filters</button>
-          <div class="chip-row" id="chip-row" style="margin-bottom:0;flex:1">
-            <div class="chip on" onclick="setChip('All',this)">All</div>
-            <div class="chip" onclick="setChip('Lipstick',this)">💄 Lipstick</div>
-            <div class="chip" onclick="setChip('Skincare',this)">🧴 Skincare</div>
-            <div class="chip" onclick="setChip('Eye',this)">👁️ Eye</div>
-            <div class="chip" onclick="setChip('Nail',this)">💅 Nail</div>
-            <div class="chip" onclick="setChip('Perfume',this)">🌸 Perfume</div>
+          <div class="chip-row" id="chip-row" style="margin-bottom:0;flex:1;min-width:0">
+            <div class="chip on"  onclick="setChip('All',this)">All</div>
+            <div class="chip"     onclick="setChip('Lipstick',this)">💄 Lipstick</div>
+            <div class="chip"     onclick="setChip('Skincare',this)">🧴 Skincare</div>
+            <div class="chip"     onclick="setChip('Eye',this)">👁️ Eye</div>
+            <div class="chip"     onclick="setChip('Nail',this)">💅 Nail</div>
+            <div class="chip"     onclick="setChip('Perfume',this)">🌸 Perfume</div>
           </div>
         </div>
         <div class="toolbar">
@@ -279,21 +295,23 @@
           </div>
           <div class="view-toggle">
             <button class="view-btn on" id="vg" onclick="setView('grid')">⊞</button>
-            <button class="view-btn" id="vl" onclick="setView('list')">☰</button>
+            <button class="view-btn"    id="vl" onclick="setView('list')">☰</button>
           </div>
         </div>
         <div class="pgrid" id="shop-grid"></div>
       </div>
+
     </div>
   </div>
 
+  <!-- FOOTER -->
   <footer class="footer">
     <div class="foot-inner">
       <div class="foot-grid">
         <div>
           <div class="logo" style="cursor:default">
             <div class="foot-logo-circle">
-              <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:28px">
+              <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" style="width:24px;height:24px">
                 <rect x="12" y="5" width="16" height="20" rx="4" fill="white" opacity=".9"/>
                 <rect x="14" y="3" width="12" height="6" rx="3" fill="white" opacity=".6"/>
                 <ellipse cx="20" cy="25" rx="8" ry="2.5" fill="white" opacity=".35"/>
@@ -306,7 +324,12 @@
             </div>
           </div>
           <p class="fdesc">Your one-stop destination for premium beauty products. Authentic, affordable, always glamorous.</p>
-          <div class="fsocials"><div class="fsbtn">📘</div><div class="fsbtn">📸</div><div class="fsbtn">🐦</div><div class="fsbtn">▶️</div></div>
+          <div class="fsocials">
+            <div class="fsbtn">📘</div>
+            <div class="fsbtn">📸</div>
+            <div class="fsbtn">🐦</div>
+            <div class="fsbtn">▶️</div>
+          </div>
         </div>
         <div class="fcol"><h4>Shop</h4><ul>
           <li><a onclick="setChip('Lipstick',null);go('shop')">Lipstick</a></li>
@@ -327,12 +350,17 @@
           <li><a onclick="go('terms')">Terms</a></li>
         </ul></div>
       </div>
-      <div class="fbot"><span>© 2025 Elite Beauty Hub. All rights reserved.</span><span>Made with 💄 for beauty lovers</span></div>
+      <div class="fbot">
+        <span>© 2025 Elite Beauty Hub. All rights reserved.</span>
+        <span>Made with 💄 for beauty lovers</span>
+      </div>
     </div>
   </footer>
 </div>
 
-<!-- CART PAGE -->
+<!-- ======================================================
+     CART PAGE
+     ====================================================== -->
 <div id="page-cart" class="page">
   <div class="cart-page">
     <div class="cart-inner">
@@ -342,7 +370,9 @@
   </div>
 </div>
 
-<!-- CONTACT PAGE -->
+<!-- ======================================================
+     CONTACT PAGE
+     ====================================================== -->
 <div id="page-contact" class="page">
   <div class="contact-page">
     <div class="contact-inner">
@@ -376,7 +406,9 @@
   </div>
 </div>
 
-<!-- FAQ PAGE -->
+<!-- ======================================================
+     FAQ PAGE
+     ====================================================== -->
 <div id="page-faq" class="page">
   <div class="info-page"><div class="info-inner">
     <span class="back-link" onclick="go('shop')">← Back to Shop</span>
@@ -393,7 +425,9 @@
   </div></div>
 </div>
 
-<!-- SHIPPING PAGE -->
+<!-- ======================================================
+     SHIPPING PAGE
+     ====================================================== -->
 <div id="page-shipping" class="page">
   <div class="info-page"><div class="info-inner">
     <span class="back-link" onclick="go('shop')">← Back to Shop</span>
@@ -404,7 +438,9 @@
   </div></div>
 </div>
 
-<!-- RETURNS PAGE -->
+<!-- ======================================================
+     RETURNS PAGE
+     ====================================================== -->
 <div id="page-returns" class="page">
   <div class="info-page"><div class="info-inner">
     <span class="back-link" onclick="go('shop')">← Back to Shop</span>
@@ -414,7 +450,9 @@
   </div></div>
 </div>
 
-<!-- ABOUT PAGE -->
+<!-- ======================================================
+     ABOUT PAGE
+     ====================================================== -->
 <div id="page-about" class="page">
   <div class="info-page"><div class="info-inner">
     <span class="back-link" onclick="go('shop')">← Back to Shop</span>
@@ -432,7 +470,9 @@
   </div></div>
 </div>
 
-<!-- BLOG PAGE -->
+<!-- ======================================================
+     BLOG PAGE
+     ====================================================== -->
 <div id="page-blog" class="page">
   <div class="info-page"><div class="info-inner">
     <span class="back-link" onclick="go('shop')">← Back to Shop</span>
@@ -448,7 +488,9 @@
   </div></div>
 </div>
 
-<!-- PRIVACY PAGE -->
+<!-- ======================================================
+     PRIVACY PAGE
+     ====================================================== -->
 <div id="page-privacy" class="page">
   <div class="info-page"><div class="info-inner">
     <span class="back-link" onclick="go('shop')">← Back to Shop</span>
@@ -459,7 +501,9 @@
   </div></div>
 </div>
 
-<!-- TERMS PAGE -->
+<!-- ======================================================
+     TERMS PAGE
+     ====================================================== -->
 <div id="page-terms" class="page">
   <div class="info-page"><div class="info-inner">
     <span class="back-link" onclick="go('shop')">← Back to Shop</span>
@@ -471,7 +515,9 @@
   </div></div>
 </div>
 
-<!-- ADD PRODUCT MODAL -->
+<!-- ======================================================
+     ADD PRODUCT MODAL
+     ====================================================== -->
 <div class="add-modal-overlay" id="add-modal">
   <div class="add-modal">
     <div class="add-modal-head">
@@ -520,7 +566,11 @@
       <div class="frow2">
         <div class="fg"><label>Brand <span style="color:var(--rose)">*</span></label><input type="text" id="prod-brand" placeholder="e.g. Lakme"></div>
         <div class="fg"><label>Category <span style="color:var(--rose)">*</span></label>
-          <select id="prod-cat"><option value="">-- Select --</option><option>Lipstick</option><option>Skincare</option><option>Eye</option><option>Nail</option><option>Perfume</option><option>Other</option></select>
+          <select id="prod-cat">
+            <option value="">-- Select --</option>
+            <option>Lipstick</option><option>Skincare</option><option>Eye</option>
+            <option>Nail</option><option>Perfume</option><option>Other</option>
+          </select>
         </div>
       </div>
       <div class="frow2">
@@ -530,7 +580,10 @@
       <div class="frow2">
         <div class="fg"><label>Rating (0–5)</label><input type="number" id="prod-rating" placeholder="4.5" min="0" max="5" step="0.1"></div>
         <div class="fg"><label>Badge</label>
-          <select id="prod-badge"><option>New</option><option>Bestseller</option><option>Hot</option><option>Trending</option><option>Sale</option><option>Premium</option><option>Luxury</option></select>
+          <select id="prod-badge">
+            <option>New</option><option>Bestseller</option><option>Hot</option>
+            <option>Trending</option><option>Sale</option><option>Premium</option><option>Luxury</option>
+          </select>
         </div>
       </div>
     </div>
@@ -541,7 +594,9 @@
   </div>
 </div>
 
-<!-- DELETE CONFIRM MODAL -->
+<!-- ======================================================
+     DELETE CONFIRM MODAL
+     ====================================================== -->
 <div class="del-modal-overlay" id="del-modal">
   <div class="del-modal">
     <div class="del-icon">🗑️</div>
@@ -554,7 +609,9 @@
   </div>
 </div>
 
-<!-- CHECKOUT MODAL -->
+<!-- ======================================================
+     CHECKOUT MODAL — fixed mobile bottom sheet
+     ====================================================== -->
 <div class="modal-overlay" id="checkout-modal">
   <div class="modal">
     <div class="modal-head">
@@ -567,10 +624,18 @@
         <div class="step" id="si-2"><div class="step-num">2</div><div class="step-lbl">Payment</div></div>
         <div class="step" id="si-3"><div class="step-num">3</div><div class="step-lbl">Review</div></div>
       </div>
+
+      <!-- Step 1: Address -->
       <div class="step-content active" id="step-1">
         <div class="section-title">📍 Delivery Address</div>
-        <label class="addr-saved on" id="addr-s1"><input type="radio" name="addr" value="s1" checked onchange="selectAddr('s1')"><div class="addr-saved-text"><h4>Home</h4><p>12/3 Rose Street, T. Nagar, Chennai - 600017, Tamil Nadu</p></div></label>
-        <label class="addr-saved" id="addr-s2"><input type="radio" name="addr" value="s2" onchange="selectAddr('s2')"><div class="addr-saved-text"><h4>Work</h4><p>45 Park Avenue, Anna Nagar, Chennai - 600040, Tamil Nadu</p></div></label>
+        <label class="addr-saved on" id="addr-s1">
+          <input type="radio" name="addr" value="s1" checked onchange="selectAddr('s1')">
+          <div class="addr-saved-text"><h4>Home</h4><p>12/3 Rose Street, T. Nagar, Chennai - 600017, Tamil Nadu</p></div>
+        </label>
+        <label class="addr-saved" id="addr-s2">
+          <input type="radio" name="addr" value="s2" onchange="selectAddr('s2')">
+          <div class="addr-saved-text"><h4>Work</h4><p>45 Park Avenue, Anna Nagar, Chennai - 600040, Tamil Nadu</p></div>
+        </label>
         <div class="or-divider">+ Add New Address</div>
         <div class="addr-grid">
           <div class="fg"><label>Full Name</label><input type="text" id="addr-name" placeholder="Your full name"></div>
@@ -580,28 +645,82 @@
           <div class="fg"><label>City</label><input type="text" id="addr-city" placeholder="Chennai"></div>
           <div class="fg"><label>State</label><input type="text" id="addr-state" placeholder="Tamil Nadu"></div>
           <div class="fg"><label>Pincode</label><input type="text" id="addr-pin" placeholder="600001"></div>
-          <div class="fg"><label>Type</label><select id="addr-type"><option>Home</option><option>Work</option><option>Other</option></select></div>
+          <div class="fg"><label>Type</label>
+            <select id="addr-type"><option>Home</option><option>Work</option><option>Other</option></select>
+          </div>
         </div>
       </div>
+
+      <!-- Step 2: Payment -->
       <div class="step-content" id="step-2">
         <div class="section-title">💳 Payment Method</div>
         <div class="pay-options">
-          <label class="pay-opt selected" onclick="selPay('upi',this)"><input type="radio" name="pay" value="upi" checked><div class="pay-icon" style="background:#e8f5e9">📱</div><div class="pay-text"><h4>UPI</h4><p>GPay, PhonePe, Paytm, BHIM</p></div></label>
+          <label class="pay-opt selected" onclick="selPay('upi',this)">
+            <input type="radio" name="pay" value="upi" checked>
+            <div class="pay-icon" style="background:#e8f5e9">📱</div>
+            <div class="pay-text"><h4>UPI</h4><p>GPay, PhonePe, Paytm, BHIM</p></div>
+          </label>
           <div id="upi-section">
             <div class="upi-apps">
-              <div class="upi-app sel" id="upi-gpay" onclick="selUpiApp('gpay')"><div style="width:32px;height:32px;background:white;border:1px solid #e8eaed;border-radius:7px;display:flex;align-items:center;justify-content:center"><svg width="24" height="12" viewBox="0 0 24 12"><text x="0" y="9" font-family="Arial" font-size="9" font-weight="bold"><tspan fill="#4285F4">G</tspan><tspan fill="#EA4335">P</tspan><tspan fill="#FBBC05">a</tspan><tspan fill="#4285F4">y</tspan></text></svg></div><span class="upi-label">GPay</span></div>
-              <div class="upi-app" id="upi-phonepe" onclick="selUpiApp('phonepe')"><div style="width:32px;height:32px;background:#5f259f;border-radius:7px;display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:900">Pe</div><span class="upi-label">PhonePe</span></div>
-              <div class="upi-app" id="upi-paytm" onclick="selUpiApp('paytm')"><div style="width:32px;height:32px;background:#00baf2;border-radius:7px;display:flex;align-items:center;justify-content:center;color:white;font-size:8px;font-weight:700">Paytm</div><span class="upi-label">Paytm</span></div>
-              <div class="upi-app" id="upi-bhim" onclick="selUpiApp('bhim')"><div style="width:32px;height:32px;background:white;border:1px solid #ddd;border-radius:7px;overflow:hidden;display:flex;flex-direction:column"><div style="flex:1;background:#FF9933"></div><div style="flex:1;background:white;display:flex;align-items:center;justify-content:center"><div style="width:6px;height:6px;border-radius:50%;border:1.5px solid #000080"></div></div><div style="flex:1;background:#138808"></div></div><span class="upi-label">BHIM</span></div>
+              <div class="upi-app sel" id="upi-gpay" onclick="selUpiApp('gpay')">
+                <div style="width:32px;height:32px;background:white;border:1px solid #e8eaed;border-radius:7px;display:flex;align-items:center;justify-content:center">
+                  <svg width="24" height="12" viewBox="0 0 24 12"><text x="0" y="9" font-family="Arial" font-size="9" font-weight="bold"><tspan fill="#4285F4">G</tspan><tspan fill="#EA4335">P</tspan><tspan fill="#FBBC05">a</tspan><tspan fill="#4285F4">y</tspan></text></svg>
+                </div>
+                <span class="upi-label">GPay</span>
+              </div>
+              <div class="upi-app" id="upi-phonepe" onclick="selUpiApp('phonepe')">
+                <div style="width:32px;height:32px;background:#5f259f;border-radius:7px;display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:900">Pe</div>
+                <span class="upi-label">PhonePe</span>
+              </div>
+              <div class="upi-app" id="upi-paytm" onclick="selUpiApp('paytm')">
+                <div style="width:32px;height:32px;background:#00baf2;border-radius:7px;display:flex;align-items:center;justify-content:center;color:white;font-size:8px;font-weight:700">Paytm</div>
+                <span class="upi-label">Paytm</span>
+              </div>
+              <div class="upi-app" id="upi-bhim" onclick="selUpiApp('bhim')">
+                <div style="width:32px;height:32px;background:white;border:1px solid #ddd;border-radius:7px;overflow:hidden;display:flex;flex-direction:column">
+                  <div style="flex:1;background:#FF9933"></div>
+                  <div style="flex:1;background:white;display:flex;align-items:center;justify-content:center"><div style="width:6px;height:6px;border-radius:50%;border:1.5px solid #000080"></div></div>
+                  <div style="flex:1;background:#138808"></div>
+                </div>
+                <span class="upi-label">BHIM</span>
+              </div>
             </div>
-            <div class="upi-input"><label>UPI ID (Optional)</label><input type="text" placeholder="yourname@upi"></div>
+            <div class="upi-input">
+              <label>UPI ID (Optional)</label>
+              <input type="text" placeholder="yourname@upi">
+            </div>
           </div>
-          <label class="pay-opt" onclick="selPay('card',this)"><input type="radio" name="pay" value="card"><div class="pay-icon" style="background:#e3f2fd">💳</div><div class="pay-text"><h4>Credit / Debit Card</h4><p>Visa, Mastercard, RuPay</p></div></label>
-          <div id="card-section" style="display:none"><div class="card-fields"><div class="fg" style="margin:0"><label>Card Number</label><input type="text" placeholder="XXXX XXXX XXXX XXXX" maxlength="19"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:9px"><div class="fg" style="margin:0"><label>Expiry</label><input type="text" placeholder="MM/YY" maxlength="5"></div><div class="fg" style="margin:0"><label>CVV</label><input type="password" placeholder="•••" maxlength="3"></div></div><div class="fg" style="margin:0"><label>Name on Card</label><input type="text" placeholder="Your Name"></div></div></div>
-          <label class="pay-opt" onclick="selPay('netbank',this)"><input type="radio" name="pay" value="netbank"><div class="pay-icon" style="background:#fff3e0">🏦</div><div class="pay-text"><h4>Net Banking</h4><p>All major banks supported</p></div></label>
-          <label class="pay-opt" onclick="selPay('cod',this)"><input type="radio" name="pay" value="cod"><div class="pay-icon" style="background:#fce4ec">💵</div><div class="pay-text"><h4>Cash on Delivery</h4><p>Pay when order arrives</p></div></label>
+
+          <label class="pay-opt" onclick="selPay('card',this)">
+            <input type="radio" name="pay" value="card">
+            <div class="pay-icon" style="background:#e3f2fd">💳</div>
+            <div class="pay-text"><h4>Credit / Debit Card</h4><p>Visa, Mastercard, RuPay</p></div>
+          </label>
+          <div id="card-section" style="display:none">
+            <div class="card-fields">
+              <div class="fg" style="margin:0"><label>Card Number</label><input type="text" placeholder="XXXX XXXX XXXX XXXX" maxlength="19"></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+                <div class="fg" style="margin:0"><label>Expiry</label><input type="text" placeholder="MM/YY" maxlength="5"></div>
+                <div class="fg" style="margin:0"><label>CVV</label><input type="password" placeholder="•••" maxlength="3"></div>
+              </div>
+              <div class="fg" style="margin:0"><label>Name on Card</label><input type="text" placeholder="Your Name"></div>
+            </div>
+          </div>
+
+          <label class="pay-opt" onclick="selPay('netbank',this)">
+            <input type="radio" name="pay" value="netbank">
+            <div class="pay-icon" style="background:#fff3e0">🏦</div>
+            <div class="pay-text"><h4>Net Banking</h4><p>All major banks supported</p></div>
+          </label>
+          <label class="pay-opt" onclick="selPay('cod',this)">
+            <input type="radio" name="pay" value="cod">
+            <div class="pay-icon" style="background:#fce4ec">💵</div>
+            <div class="pay-text"><h4>Cash on Delivery</h4><p>Pay when order arrives</p></div>
+          </label>
         </div>
       </div>
+
+      <!-- Step 3: Review -->
       <div class="step-content" id="step-3">
         <div class="section-title">📦 Order Review</div>
         <div class="addr-review" id="review-addr"></div>
@@ -609,6 +728,8 @@
         <div class="order-items" id="review-items"></div>
         <div class="review-total" id="review-total"></div>
       </div>
+
+      <!-- Success -->
       <div class="step-content" id="step-success">
         <div class="success-screen">
           <div class="success-icon">🎉</div>
@@ -616,10 +737,12 @@
           <p>Thank you for shopping at <strong>Elite Beauty Hub</strong>!</p>
           <div class="order-id" id="order-id-display"></div>
           <p style="font-size:12.5px;color:var(--muted)">Confirmation SMS sent.<br>Estimated delivery: <strong>2–4 business days</strong> 🚚</p>
-          <button class="btn-next" style="margin-top:16px;max-width:200px" onclick="closeModal();go('shop')">Continue Shopping 💄</button>
+          <button class="btn-next" style="margin-top:16px;max-width:200px;margin-left:auto;margin-right:auto;display:block"
+            onclick="closeModal();go('shop')">Continue Shopping 💄</button>
         </div>
       </div>
     </div>
+
     <div class="modal-foot" id="modal-foot">
       <button class="btn-back" id="btn-back" onclick="modalBack()">← Back</button>
       <button class="btn-next" id="btn-next" onclick="modalNext()">Continue →</button>
